@@ -1,0 +1,171 @@
+import Link from "next/link"
+import { Phone, Mail, MapPin, Clock, Facebook, Instagram, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+
+export default function Footer() {
+  return (
+    <footer className="bg-gray-900 text-white">
+      {/* CTA Banner */}
+      <div className="bg-blue-600">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-center md:text-left">
+              <h3 className="text-2xl font-bold text-white mb-1">Hulp nodig of vragen?</h3>
+              <p className="text-blue-100">Neem vrijblijvend contact met ons op. Wij helpen u graag!</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a href="tel:+31188809802">
+                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 w-full sm:w-auto">
+                  <Phone className="w-5 h-5 mr-2" />
+                  Bel ons direct
+                </Button>
+              </a>
+              <Link href="/#contact">
+                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-blue-600 bg-transparent w-full sm:w-auto">
+                  Stuur een bericht
+                  <ChevronRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main footer */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
+          {/* About */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
+                <span className="text-white text-2xl font-bold">V</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold">Autogarage Viorel</h3>
+                <p className="text-sm text-gray-400">Eerlijk, betaalbaar, betrouwbaar</p>
+              </div>
+            </div>
+            <p className="text-gray-400 text-sm leading-relaxed mb-6">
+              Uw betrouwbare partner voor autoonderhoud, reparaties, APK keuringen en 
+              kwaliteit occasions in Terneuzen en omgeving.
+            </p>
+            <div className="flex gap-3">
+              <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors" aria-label="Facebook">
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors" aria-label="Instagram">
+                <Instagram className="w-5 h-5" />
+              </a>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 className="text-lg font-semibold mb-6">Snelle Links</h4>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/occasions" className="text-gray-400 hover:text-white transition-colors">
+                  Occasions
+                </Link>
+              </li>
+              <li>
+                <Link href="/diensten" className="text-gray-400 hover:text-white transition-colors">
+                  Werkplaats
+                </Link>
+              </li>
+              <li>
+                <Link href="/#over-ons" className="text-gray-400 hover:text-white transition-colors">
+                  Over ons
+                </Link>
+              </li>
+              <li>
+                <Link href="/#contact" className="text-gray-400 hover:text-white transition-colors">
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h4 className="text-lg font-semibold mb-6">Diensten</h4>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/diensten" className="text-gray-400 hover:text-white transition-colors">
+                  Onderhoud & Reparaties
+                </Link>
+              </li>
+              <li>
+                <Link href="/diensten" className="text-gray-400 hover:text-white transition-colors">
+                  APK Keuring
+                </Link>
+              </li>
+              <li>
+                <Link href="/occasions" className="text-gray-400 hover:text-white transition-colors">
+                  In- & Verkoop Auto's
+                </Link>
+              </li>
+              <li>
+                <Link href="/diensten" className="text-gray-400 hover:text-white transition-colors">
+                  Banden Service
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="text-lg font-semibold mb-6">Contact</h4>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <span className="text-gray-400">
+                  Ambachtsstraat 1-A<br />
+                  4538 AV Terneuzen
+                </span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Phone className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                <a href="tel:+31188809802" className="text-gray-400 hover:text-white transition-colors">
+                  +31 (0)18 80 98 02
+                </a>
+              </li>
+              <li className="flex items-center gap-3">
+                <Mail className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                <a href="mailto:info@autogarageviorel.nl" className="text-gray-400 hover:text-white transition-colors">
+                  info@autogarageviorel.nl
+                </a>
+              </li>
+              <li className="flex items-start gap-3">
+                <Clock className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <span className="text-gray-400">
+                  Ma - Vr: 08:00 - 17:00<br />
+                  Za: 09:00 - 15:00
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="border-t border-gray-800">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-500 text-sm">
+              © {new Date().getFullYear()} Autogarage Viorel. Alle rechten voorbehouden.
+            </p>
+            <div className="flex gap-6 text-sm">
+              <Link href="#" className="text-gray-500 hover:text-white transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="#" className="text-gray-500 hover:text-white transition-colors">
+                Algemene Voorwaarden
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
