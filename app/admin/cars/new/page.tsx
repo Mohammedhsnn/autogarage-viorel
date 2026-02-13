@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -48,8 +48,15 @@ export default function NewCarPage() {
   const [images, setImages] = useState<string[]>([])
   const [imageUrlInput, setImageUrlInput] = useState("")
   const [uploadingImages, setUploadingImages] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const { toast } = useToast()
+
+  const openFileDialog = () => {
+    if (uploadingImages) return
+    fileInputRef.current?.click()
+  }
 
   const [formData, setFormData] = useState({
     brand: "",
@@ -89,21 +96,26 @@ export default function NewCarPage() {
     }))
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files || files.length === 0) return
+  const uploadFiles = async (files: FileList | File[]) => {
+    const list = Array.from(files).filter((f) => f.type.startsWith("image/") || /\.(jpe?g|png|webp|gif)$/i.test(f.name))
+    if (list.length === 0) {
+      toast({ title: "Geen afbeeldingen", description: "Selecteer alleen afbeeldingen (JPEG, PNG, WebP, GIF).", variant: "destructive" })
+      return
+    }
     setUploadingImages(true)
     try {
       const formDataUpload = new FormData()
-      Array.from(files).forEach((file) => formDataUpload.append("files", file))
+      list.forEach((file) => formDataUpload.append("files", file))
       const res = await fetch("/api/upload", {
         method: "POST",
         body: formDataUpload,
         credentials: "include",
       })
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        toast({ title: "Upload mislukt", description: data.error || "Probeer het opnieuw.", variant: "destructive" })
+        const msg = res.status === 401 ? "Sessie verlopen. Log opnieuw in bij het adminpanel." : (data.error || "Probeer het opnieuw.")
+        toast({ title: "Upload mislukt", description: msg, variant: "destructive" })
+        if (res.status === 401) router.push("/admin")
         return
       }
       if (data.urls && data.urls.length > 0) {
@@ -114,8 +126,36 @@ export default function NewCarPage() {
       toast({ title: "Upload mislukt", description: "Controleer je verbinding en probeer het opnieuw.", variant: "destructive" })
     } finally {
       setUploadingImages(false)
-      e.target.value = ""
     }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+    await uploadFiles(files)
+    e.target.value = ""
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!uploadingImages) setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    if (uploadingImages) return
+    const files = e.dataTransfer.files
+    if (!files || files.length === 0) return
+    await uploadFiles(files)
   }
 
   const removeImage = (index: number) => {
@@ -165,6 +205,7 @@ export default function NewCarPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(carData),
+        credentials: "include",
       })
 
       if (response.ok) {
@@ -374,34 +415,71 @@ export default function NewCarPage() {
                 </div>
 
                 <div>
-                  <Label className="text-sm text-gray-600">Of upload vanaf uw apparaat (galerij of map)</Label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mt-1">
-                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600 mb-2">Klik om foto's uit je galerij of map te kiezen (JPEG, PNG, WebP of GIF, max 10 MB)</p>
-                    <input type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleImageUpload} className="hidden" id="image-upload" disabled={uploadingImages} />
-                    <label htmlFor="image-upload" className={uploadingImages ? "pointer-events-none opacity-70" : "cursor-pointer"}>
-                      <Button type="button" variant="outline" className="cursor-pointer bg-transparent" disabled={uploadingImages}>
-                        {uploadingImages ? "Bezig met uploaden..." : "Foto's selecteren"}
-                      </Button>
-                    </label>
+                  <Label className="text-sm text-gray-600">Of upload vanaf uw apparaat</Label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="sr-only"
+                    aria-hidden
+                    tabIndex={-1}
+                    disabled={uploadingImages}
+                  />
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={openFileDialog}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault()
+                        openFileDialog()
+                      }
+                    }}
+                    className={`mt-1 border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                      isDragging
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-300 hover:border-blue-400 hover:bg-gray-50/50"
+                    } ${uploadingImages ? "pointer-events-none opacity-70" : "cursor-pointer"}`}
+                  >
+                    <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
+                    <p className="text-sm font-medium text-gray-700 mb-1">
+                      {isDragging ? "Laat los om te uploaden" : "Sleep foto's hierheen"}
+                    </p>
+                    <p className="text-sm text-gray-500 mb-4">
+                      of klik om uit je bestanden te kiezen (JPEG, PNG, WebP, GIF – max 10 MB)
+                    </p>
+                    <span className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background hover:bg-accent hover:text-accent-foreground">
+                      {uploadingImages ? "Bezig met uploaden..." : "Bestanden kiezen"}
+                    </span>
                   </div>
                 </div>
 
                 {images.length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {images.map((image, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={image || "/placeholder.svg"}
-                          alt={`Upload ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg"
-                        />
+                      <div key={`${image}-${index}`} className="relative group">
+                        <div className="aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 border">
+                          <img
+                            src={image}
+                            alt={`Foto ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span className="absolute top-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                          {index === 0 ? "Hoofdfoto" : index + 1}
+                        </span>
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
-                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs"
+                          className="absolute top-1 right-1 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center shadow hover:bg-red-600"
+                          aria-label="Foto verwijderen"
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-4 h-4" />
                         </button>
                       </div>
                     ))}

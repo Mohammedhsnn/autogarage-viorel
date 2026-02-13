@@ -26,3 +26,8 @@ Er staat **geen sample- of testdata** in deze scripts. De database start leeg (a
 - **001** en **002** maken ook de **services**-tabel aan. De pagina **/diensten** (Werkplaats) haalt haar content daar vandaan.
 - Als je alleen **001** of **002** eerder hebt gedraaid **zonder** services-tabel, run dan **004-create-services-table.sql** om alleen die tabel toe te voegen.
 - Beheer diensten en tarieven via **Admin → Diensten beheren**: prijzen, teksten, welke diensten getoond worden (bijv. APK keuring, onderhoud, banden, etc.).
+
+## Paginateksten (diensten)
+
+- **006-page-content.sql** maakt de tabel **page_content** aan en vult teksten voor de pagina **/diensten** (hero, sectiekoppen, “Hoe wij werken”-stappen). De klant kan deze later aanpassen via Supabase (Table Editor → page_content) of via een toekomstige admin-pagina.
+- Run dit script **na** 001 of 002 als je bewerkbare teksten op de dienstenpagina wilt.

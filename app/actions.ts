@@ -138,6 +138,20 @@ export async function getCars(filters?: {
   }
 }
 
+export async function getPageContent(pageSlug: string): Promise<Record<string, unknown> | null> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("page_content")
+      .select("content")
+      .eq("page_slug", pageSlug)
+      .single()
+    if (error || !data?.content) return null
+    return data.content as Record<string, unknown>
+  } catch {
+    return null
+  }
+}
+
 export async function getCarById(id: number) {
   try {
     // Get car

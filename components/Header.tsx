@@ -2,8 +2,15 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Phone, Mail, MapPin, Menu, X, Clock } from "lucide-react"
+import { Phone, Mail, MapPin, Menu, X, Clock, ChevronDown, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { DIENSTEN_DROPDOWN_LABELS, getSlugForLabel } from "@/lib/diensten-paginas"
 
 interface HeaderProps {
   currentPage?: string
@@ -11,6 +18,7 @@ interface HeaderProps {
 
 export default function Header({ currentPage = "" }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileDienstenOpen, setMobileDienstenOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -20,14 +28,6 @@ export default function Header({ currentPage = "" }: HeaderProps) {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
-
-  const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/occasions", label: "Occasions" },
-    { href: "/diensten", label: "Werkplaats" },
-    { href: "/#over-ons", label: "Over ons" },
-    { href: "/#contact", label: "Contact" },
-  ]
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "shadow-lg" : "shadow-sm"}`}>
@@ -63,9 +63,11 @@ export default function Header({ currentPage = "" }: HeaderProps) {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-700 transition-colors">
-                <span className="text-white text-2xl font-bold">V</span>
-              </div>
+              <img
+                src="/logo.png"
+                alt="Autogarage Viorel"
+                className="h-12 w-auto object-contain"
+              />
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Autogarage Viorel</h1>
                 <p className="text-xs text-gray-500">Eerlijk, betaalbaar, betrouwbaar</p>
@@ -74,19 +76,73 @@ export default function Header({ currentPage = "" }: HeaderProps) {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    currentPage === link.href
+              <Link
+                href="/"
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentPage === "/"
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                }`}
+              >
+                Home
+              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-1 outline-none ${
+                    currentPage === "/diensten"
                       ? "text-blue-600 bg-blue-50"
                       : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                   }`}
                 >
-                  {link.label}
-                </Link>
-              ))}
+                  Diensten
+                  <ChevronDown className="w-4 h-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="min-w-[240px] max-h-[70vh] overflow-y-auto">
+                  <DropdownMenuItem asChild>
+                    <Link href="/diensten" className="cursor-pointer font-medium">
+                      Alle diensten
+                    </Link>
+                  </DropdownMenuItem>
+                  <div className="h-px bg-gray-200 my-1" />
+                  {DIENSTEN_DROPDOWN_LABELS.map((label) => (
+                    <DropdownMenuItem key={label} asChild>
+                      <Link href={`/diensten/${getSlugForLabel(label)}`} className="cursor-pointer">
+                        {label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Link
+                href="/occasions"
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentPage === "/occasions"
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                }`}
+              >
+                Occasions
+              </Link>
+              <Link
+                href="/onderdelen"
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentPage === "/onderdelen"
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                }`}
+              >
+                Onderdelen
+              </Link>
+              <Link
+                href="/#contact"
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentPage === "/#contact"
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                }`}
+              >
+                Contact
+              </Link>
             </nav>
 
             {/* CTA Buttons */}
@@ -97,7 +153,7 @@ export default function Header({ currentPage = "" }: HeaderProps) {
                   Bel ons
                 </Button>
               </a>
-              <Link href="/#contact">
+              <Link href="/afspraak">
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                   Afspraak maken
                 </Button>
@@ -136,20 +192,75 @@ export default function Header({ currentPage = "" }: HeaderProps) {
           </div>
           
           <nav className="flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`font-medium py-3 px-4 rounded-lg transition-colors ${
-                  currentPage === link.href
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-700 hover:bg-gray-50"
+            <Link
+              href="/"
+              className={`font-medium py-3 px-4 rounded-lg transition-colors ${
+                currentPage === "/" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50"
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <div>
+              <button
+                type="button"
+                className={`font-medium py-3 px-4 rounded-lg transition-colors w-full flex items-center justify-between ${
+                  currentPage === "/diensten" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50"
                 }`}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => setMobileDienstenOpen(!mobileDienstenOpen)}
               >
-                {link.label}
-              </Link>
-            ))}
+                Diensten
+                <ChevronRight
+                  className={`w-4 h-4 transition-transform ${mobileDienstenOpen ? "rotate-90" : ""}`}
+                />
+              </button>
+              <div className={`overflow-hidden transition-all ${mobileDienstenOpen ? "max-h-[500px]" : "max-h-0"}`}>
+                <Link
+                  href="/diensten"
+                  className="block py-2 pl-6 pr-4 text-gray-600 hover:bg-gray-50 rounded-lg"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Alle diensten
+                </Link>
+                {DIENSTEN_DROPDOWN_LABELS.map((label) => (
+                  <Link
+                    key={label}
+                    href={`/diensten/${getSlugForLabel(label)}`}
+                    className="block py-2 pl-6 pr-4 text-gray-600 hover:bg-gray-50 rounded-lg"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <Link
+              href="/occasions"
+              className={`font-medium py-3 px-4 rounded-lg transition-colors ${
+                currentPage === "/occasions" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50"
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Occasions
+            </Link>
+            <Link
+              href="/onderdelen"
+              className={`font-medium py-3 px-4 rounded-lg transition-colors ${
+                currentPage === "/onderdelen" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50"
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Onderdelen
+            </Link>
+            <Link
+              href="/#contact"
+              className={`font-medium py-3 px-4 rounded-lg transition-colors ${
+                currentPage === "/#contact" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50"
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Contact
+            </Link>
             <div className="flex flex-col gap-2 pt-4 mt-2 border-t">
               <a href="tel:+31188809802" className="w-full">
                 <Button variant="outline" className="w-full border-blue-600 text-blue-600 bg-transparent">
@@ -157,7 +268,7 @@ export default function Header({ currentPage = "" }: HeaderProps) {
                   +31 (0)18 80 98 02
                 </Button>
               </a>
-              <Link href="/#contact" onClick={() => setMobileMenuOpen(false)} className="w-full">
+              <Link href="/afspraak" onClick={() => setMobileMenuOpen(false)} className="w-full">
                 <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                   Afspraak maken
                 </Button>

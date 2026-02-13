@@ -5,11 +5,10 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Car, Lock, User, AlertTriangle } from "lucide-react"
+import { Car, Lock, AlertTriangle } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
@@ -24,18 +23,19 @@ export default function AdminLoginPage() {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ password }),
+        credentials: "include",
       })
 
       if (!response.ok) {
         const errorData = await response.json()
-        setError(errorData.error || "Ongeldige inloggegevens")
+        setError(errorData.error || "Ongeldig wachtwoord")
         return
       }
 
       localStorage.setItem("admin-logged-in", "true")
       router.push("/admin/dashboard")
-    } catch (error) {
+    } catch {
       setError("Er is een netwerkfout opgetreden. Probeer het opnieuw.")
     } finally {
       setIsLoading(false)
@@ -56,23 +56,6 @@ export default function AdminLoginPage() {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">E-mail</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
-                    placeholder="voer uw e-mailadres in"
-                    required
-                    autoComplete="email"
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-              <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">Wachtwoord</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -82,10 +65,11 @@ export default function AdminLoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10"
-                    placeholder="voer uw wachtwoord in"
+                    placeholder="Voer het adminwachtwoord in"
                     required
                     autoComplete="current-password"
                     disabled={isLoading}
+                    minLength={8}
                   />
                 </div>
               </div>

@@ -6,6 +6,13 @@ import * as jwt from "jsonwebtoken"
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
+const ALLOWED_EXT = [".jpg", ".jpeg", ".png", ".webp", ".gif"]
+
+function isAllowedFile(file: File): boolean {
+  if (ALLOWED_TYPES.includes(file.type)) return true
+  const ext = path.extname(file.name).toLowerCase()
+  return ALLOWED_EXT.includes(ext)
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,9 +45,9 @@ export async function POST(request: NextRequest) {
           { status: 400 },
         )
       }
-      if (!ALLOWED_TYPES.includes(file.type)) {
+      if (!isAllowedFile(file)) {
         return NextResponse.json(
-          { error: `Ongeldig type: ${file.name}. Alleen JPEG, PNG, WebP of GIF.` },
+          { error: `Ongeldig bestand: ${file.name}. Alleen JPEG, PNG, WebP of GIF.` },
           { status: 400 },
         )
       }
