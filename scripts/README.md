@@ -1,33 +1,38 @@
-# Database scripts – Autogarage Viorel
+# Database scripts – Autogarage Viorel (Supabase)
 
-## Welk script wanneer?
+De app gebruikt **Supabase** voor occasions, admin-auto’s, diensten en (optioneel) page content. Zorg dat in je project de env-variabelen staan: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
-| Script | Wanneer gebruiken |
-|--------|--------------------|
-| **001-create-tables.sql** | **Eerste keer** opzetten. Maakt alleen tabellen aan als ze nog niet bestaan. Verwijdert geen data. |
-| **002-fix-database.sql** | **Reset**: alles weggooien en opnieuw beginnen. Verwijdert alle tabellen en maakt ze opnieuw. |
-| **supabase-init.sql** | Zelfde idee als 002 (drop + create). Kan als alternatief worden gebruikt. |
+## Supabase in één keer goed zetten
 
-Er staat **geen sample- of testdata** in deze scripts. De database start leeg (alleen de admin-gebruiker). Occasions voeg je toe via het adminpanel: inloggen → Auto's beheren → Nieuwe auto.
+1. Ga in [Supabase](https://supabase.com) naar je project → **SQL Editor**.
+2. Open het bestand **`supabase-init.sql`** uit deze map, kopieer de volledige inhoud en plak die in de SQL Editor.
+3. Klik op **Run**. Het script:
+   - verwijdert bestaande tabellen (indien aanwezig) in de juiste volgorde;
+   - maakt alle tabellen aan: **users**, **cars**, **car_images**, **car_features**, **services**, **page_content**;
+   - vult een optionele admin-gebruiker en standaard **page_content** voor de dienstenpagina.
+4. Daarna is de database klaar. Occasions beheer je via de site: **Admin** (inloggen met het wachtwoord uit `.env.local` / Vercel) → **Auto’s** → **Nieuwe auto**.
 
-## Stappen
+## Tabellen die de app gebruikt
 
-1. Ga in Supabase naar **SQL Editor**.
-2. Kies **één** script:
-   - Nog geen tabellen? → **001-create-tables.sql** kopiëren en uitvoeren.
-   - Alles opnieuw willen? → **002-fix-database.sql** of **supabase-init.sql** kopiëren en uitvoeren.
-3. Na het runnen kun je inloggen op het adminpanel met:
-   - **E-mail:** admin@autogarage-viorel.nl  
-   - **Wachtwoord:** admin123  
-   Wijzig dit wachtwoord na de eerste login.
+| Tabel           | Gebruik |
+|----------------|--------|
+| **cars**       | Occasions (merk, model, prijs, foto’s, etc.). |
+| **car_images** | Foto’s per auto (meerdere per occasion). |
+| **car_features** | Kenmerken per auto (bijv. airco, cruise control). |
+| **services**   | Diensten/tarieven (o.a. voor Admin → Diensten beheren). |
+| **page_content** | Bewerkbare teksten per pagina (o.a. slug `diensten`). |
+| **users**      | Optioneel; admin-login gebruikt nu alleen het wachtwoord uit de omgeving. |
 
-## Diensten (services)
+## Overige scripts
 
-- **001** en **002** maken ook de **services**-tabel aan. De pagina **/diensten** (Werkplaats) haalt haar content daar vandaan.
-- Als je alleen **001** of **002** eerder hebt gedraaid **zonder** services-tabel, run dan **004-create-services-table.sql** om alleen die tabel toe te voegen.
-- Beheer diensten en tarieven via **Admin → Diensten beheren**: prijzen, teksten, welke diensten getoond worden (bijv. APK keuring, onderhoud, banden, etc.).
+- **001-create-tables.sql** – Alleen tabellen aanmaken (geen drop). Handig als je niets wilt wissen.
+- **002-fix-database.sql** – Alles droppen en opnieuw aanmaken (oude stijl, vergelijkbaar met supabase-init).
+- **004-create-services-table.sql** – Alleen de **services**-tabel toevoegen als die nog ontbreekt.
+- **006-page-content.sql** – Alleen **page_content**-tabel + seed. Overbodig als je **supabase-init.sql** al hebt gedraaid.
 
-## Paginateksten (diensten)
+## Connectie controleren
 
-- **006-page-content.sql** maakt de tabel **page_content** aan en vult teksten voor de pagina **/diensten** (hero, sectiekoppen, “Hoe wij werken”-stappen). De klant kan deze later aanpassen via Supabase (Table Editor → page_content) of via een toekomstige admin-pagina.
-- Run dit script **na** 001 of 002 als je bewerkbare teksten op de dienstenpagina wilt.
+- **Lokaal:** Zet in `.env.local` de drie Supabase-variabelen (zie `.env.example`), herstart `npm run dev`, en ga naar `/occasions` en `/admin`.
+- **Vercel:** Zet dezelfde variabelen in **Project → Settings → Environment Variables** (Production) en voer een **Redeploy** uit.
+
+Als je de fout “Missing Supabase environment variables” ziet, ontbreken de variabelen in de omgeving of moet je opnieuw deployen na het toevoegen.

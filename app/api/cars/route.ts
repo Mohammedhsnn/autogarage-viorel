@@ -7,10 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
 
 export async function GET(request: NextRequest) {
   try {
-    console.log("API /cars GET request received")
-
     const { searchParams } = new URL(request.url)
-
     const filters = {
       status: searchParams.get("status") || "available",
       brand: searchParams.get("brand") || undefined,
@@ -19,29 +16,32 @@ export async function GET(request: NextRequest) {
       sortOrder: searchParams.get("sortOrder") || "desc",
     }
 
-    console.log("Filters:", filters)
-
     const cars = await getCars(filters)
-
-    console.log(`API returning ${cars.length} cars`)
-
     return NextResponse.json({
       success: true,
       cars: cars,
       count: cars.length,
     })
   } catch (error) {
-    console.error("API Error fetching cars:", error)
+    const message = error instanceof Error ? error.message : "Failed to fetch cars"
+    const isConfigError = message.includes("Missing Supabase") || message.includes("Configure NEXT_PUBLIC_SUPABASE")
 
+    // Bij ontbrekende Supabase-config: geen crash, lege lijst zodat /occasions gewoon laadt
+    if (isConfigError) {
+      return NextResponse.json({
+        success: true,
+        cars: [],
+        count: 0,
+        configMissing: true,
+      })
+    }
+
+    console.error("API Error fetching cars:", error)
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to fetch cars",
+        error: message,
         cars: [],
-        debug: {
-          message: error instanceof Error ? error.message : "Unknown error",
-          stack: error instanceof Error ? error.stack : undefined,
-        },
       },
       { status: 500 },
     )

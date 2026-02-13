@@ -1,10 +1,12 @@
 -- ============================================================
--- supabase-init.sql
--- Alternatief init-script. Verwijdert bestaande tabellen en maakt ze opnieuw.
--- Gebruik price INTEGER (zoals de app verwacht), geen DECIMAL.
--- Geen sample data – productie-klaar.
+-- supabase-init.sql – Volledige Supabase-setup voor Autogarage Viorel
+-- Run dit script één keer in Supabase Dashboard → SQL Editor.
+-- Maakt alle tabellen die de app gebruikt: users, cars, car_images,
+-- car_features, services, page_content.
 -- ============================================================
 
+-- Verwijder in juiste volgorde (vanwege foreign keys)
+DROP TABLE IF EXISTS page_content CASCADE;
 DROP TABLE IF EXISTS services CASCADE;
 DROP TABLE IF EXISTS car_features CASCADE;
 DROP TABLE IF EXISTS car_images CASCADE;
@@ -86,8 +88,56 @@ CREATE INDEX IF NOT EXISTS idx_services_category ON services(category);
 CREATE INDEX IF NOT EXISTS idx_services_active ON services(is_active);
 CREATE INDEX IF NOT EXISTS idx_services_sort ON services(sort_order);
 
--- Alleen admin (wachtwoord: admin123)
-INSERT INTO users (email, password_hash, name, role) VALUES
-('admin@autogarage-viorel.nl', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'admin');
+-- page_content: bewerkbare teksten per pagina (o.a. /diensten)
+CREATE TABLE page_content (
+  id SERIAL PRIMARY KEY,
+  page_slug VARCHAR(100) UNIQUE NOT NULL,
+  content JSONB NOT NULL DEFAULT '{}',
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
--- Geen sample data. Occasions via admin panel.
+-- Optioneel: admin-gebruiker (login is nu wachtwoord-only via env, deze tabel blijft voor eventueel toekomstig gebruik)
+INSERT INTO users (email, password_hash, name, role) VALUES
+('admin@autogarage-viorel.nl', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'admin')
+ON CONFLICT (email) DO NOTHING;
+
+-- Seed page_content voor dienstenpagina (optioneel; /diensten is nu statisch, dit is voor als je later CMS wilt)
+INSERT INTO page_content (page_slug, content) VALUES (
+  'diensten',
+  '{
+    "hero": {
+      "badge": "Professionele autoservice",
+      "title": "Onze Diensten",
+      "subtitle": "Van preventief onderhoud tot complexe reparaties – bij Autogarage Viorel bent u verzekerd van vakkundig werk, eerlijke prijzen en persoonlijke service.",
+      "cta_primary": "Bel voor advies",
+      "cta_secondary": "Plan een afspraak"
+    },
+    "main_section": {
+      "title": "Onze Hoofddiensten",
+      "subtitle": "Wij bieden een compleet pakket aan autoservices."
+    },
+    "additional_section": {
+      "title": "Aanvullende Services",
+      "subtitle": "Naast onze hoofddiensten bieden wij ook gespecialiseerde services."
+    },
+    "how_we_work": {
+      "title": "Hoe wij werken",
+      "subtitle": "Ons werkproces is transparant en gericht op uw tevredenheid.",
+      "steps": [
+        { "number": 1, "title": "Afspraak maken", "description": "Bel ons of maak online een afspraak." },
+        { "number": 2, "title": "Diagnose & Offerte", "description": "Wij onderzoeken uw auto en geven een transparante offerte." },
+        { "number": 3, "title": "Vakkundig werk", "description": "Na goedkeuring voeren wij het werk vakkundig uit." },
+        { "number": 4, "title": "Oplevering", "description": "Uw auto wordt opgeleverd met garantie en uitleg." }
+      ]
+    },
+    "pricing_section": {
+      "title": "Transparante Prijzen",
+      "subtitle": "Geen verrassingen achteraf. Onze prijzen zijn helder en eerlijk."
+    }
+  }'::jsonb
+)
+ON CONFLICT (page_slug) DO UPDATE SET
+  content = EXCLUDED.content,
+  updated_at = CURRENT_TIMESTAMP;
+
+-- Klaar. Occasions voeg je toe via Admin → Auto's → Nieuwe auto.
