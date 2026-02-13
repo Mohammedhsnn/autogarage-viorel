@@ -28,8 +28,14 @@ export default function AdminLoginPage() {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        setError(errorData.error || "Ongeldig wachtwoord")
+        let msg = "Ongeldig wachtwoord"
+        try {
+          const errorData = await response.json()
+          if (errorData?.error) msg = errorData.error
+        } catch {
+          if (response.status === 500) msg = "Inloggen is niet geconfigureerd. Controleer de serverconfiguratie."
+        }
+        setError(msg)
         return
       }
 

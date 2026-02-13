@@ -13,17 +13,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Vul het wachtwoord in." }, { status: 400 })
     }
 
-    // Hash kan als plain ($2b$12$...) of als base64 in env staan (voorkomt $ expansion)
-    let adminPasswordHash = (process.env.ADMIN_PASSWORD_HASH ?? "").trim().replace(/^["']|["']$/g, "")
-    if (adminPasswordHash && !adminPasswordHash.startsWith("$2")) {
+    // Hash: plain ($2b$12$...) of base64 (aanbevolen op Vercel i.v.m. $ in env)
+    let raw = (process.env.ADMIN_PASSWORD_HASH ?? "").trim().replace(/\r?\n/g, "").replace(/^["']|["']$/g, "")
+    if (raw && !raw.startsWith("$2")) {
+      // Verwijder leading/trailing niet-base64 tekens (bijv. per ongeluk spaties/punten in Vercel)
+      raw = raw.replace(/^[^A-Za-z0-9+/=]+|[^A-Za-z0-9+/=]+$/g, "")
       try {
-        adminPasswordHash = Buffer.from(adminPasswordHash, "base64").toString("utf8")
+        raw = Buffer.from(raw, "base64").toString("utf8")
       } catch {
-        adminPasswordHash = ""
+        raw = ""
       }
     }
+    const adminPasswordHash = raw
     if (!adminPasswordHash || !adminPasswordHash.startsWith("$2")) {
-      console.error("ADMIN_PASSWORD_HASH / ADMIN_PASSWORD_HASH_B64 is not set or invalid")
+      console.error("Login: ADMIN_PASSWORD_HASH ontbreekt of ongeldig (controleer Vercel → Env vars → Production)")
       return NextResponse.json(
         { error: "Inloggen is niet geconfigureerd. Neem contact op met de beheerder." },
         { status: 500 },
@@ -50,7 +53,8 @@ export async function POST(request: NextRequest) {
     response.cookies.set("auth-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
+      path: "/",
       maxAge: 86400, // 24 uur
     })
 
