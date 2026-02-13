@@ -96,10 +96,13 @@ CREATE TABLE page_content (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Optioneel: admin-gebruiker (login is nu wachtwoord-only via env, deze tabel blijft voor eventueel toekomstig gebruik)
+-- Admin-gebruiker voor /admin login (wachtwoord: ViorelAdmin12)
 INSERT INTO users (email, password_hash, name, role) VALUES
-('admin@autogarage-viorel.nl', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'admin')
-ON CONFLICT (email) DO NOTHING;
+('admin@autogarage-viorel.nl', '$2b$10$C8rCXlKI9wM6ylOs8wjtvu2/Kab7WhsISNxotvdCAghI/2Fz8TxHG', 'Admin', 'admin')
+ON CONFLICT (email) DO UPDATE SET
+  password_hash = EXCLUDED.password_hash,
+  name = EXCLUDED.name,
+  role = EXCLUDED.role;
 
 -- Seed page_content voor dienstenpagina (optioneel; /diensten is nu statisch, dit is voor als je later CMS wilt)
 INSERT INTO page_content (page_slug, content) VALUES (

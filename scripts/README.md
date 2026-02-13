@@ -10,7 +10,21 @@ De app gebruikt **Supabase** voor occasions, admin-auto’s, diensten en (option
    - verwijdert bestaande tabellen (indien aanwezig) in de juiste volgorde;
    - maakt alle tabellen aan: **users**, **cars**, **car_images**, **car_features**, **services**, **page_content**;
    - vult een optionele admin-gebruiker en standaard **page_content** voor de dienstenpagina.
-4. Daarna is de database klaar. Occasions beheer je via de site: **Admin** (inloggen met het wachtwoord uit `.env.local` / Vercel) → **Auto’s** → **Nieuwe auto**.
+4. Daarna is de database klaar. **Admin-login:** ga naar `/admin` en log in met wachtwoord **ViorelAdmin12** (de admin-gebruiker staat in de tabel **users**). Occasions beheer je daarna via **Admin** → **Auto’s** → **Nieuwe auto**.
+
+## Admin-login (Supabase)
+
+Het wachtwoord voor `/admin` staat in Supabase in de tabel **users** (rij met `role = 'admin'`). Geen env-variabele meer nodig.
+
+- **Standaardwachtwoord** na het runnen van `supabase-init.sql`: **ViorelAdmin12**
+- **Wachtwoord wijzigen:** in Supabase → **SQL Editor** onderstaand uitvoeren (vervang `NIEUW_WACHTWOORD` door je gekozen wachtwoord). Genereer eerst een hash:
+  ```bash
+  node -e "require('bcryptjs').hash('NIEUW_WACHTWOORD', 10).then(console.log)"
+  ```
+  Kopieer de output (bijv. `$2b$10$...`) en run in Supabase:
+  ```sql
+  UPDATE users SET password_hash = '$2b$10$... (jouw hash)' WHERE role = 'admin';
+  ```
 
 ## Tabellen die de app gebruikt
 
@@ -21,7 +35,7 @@ De app gebruikt **Supabase** voor occasions, admin-auto’s, diensten en (option
 | **car_features** | Kenmerken per auto (bijv. airco, cruise control). |
 | **services**   | Diensten/tarieven (o.a. voor Admin → Diensten beheren). |
 | **page_content** | Bewerkbare teksten per pagina (o.a. slug `diensten`). |
-| **users**      | Optioneel; admin-login gebruikt nu alleen het wachtwoord uit de omgeving. |
+| **users**      | Admin-login: de app controleert het wachtwoord tegen `password_hash` van de gebruiker met `role = 'admin'`. |
 
 ## Overige scripts
 

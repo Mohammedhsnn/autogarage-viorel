@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import * as jwt from "jsonwebtoken"
+import { supabaseAdmin } from "@/lib/supabase"
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
 
@@ -13,41 +14,44 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Vul het wachtwoord in." }, { status: 400 })
     }
 
-    // Hash: plain ($2b$12$...) of base64 (aanbevolen op Vercel i.v.m. $ in env)
-    let raw = (process.env.ADMIN_PASSWORD_HASH ?? "").trim().replace(/\r?\n/g, "").replace(/^["']|["']$/g, "")
-    if (raw && !raw.startsWith("$2")) {
-      // Verwijder leading/trailing niet-base64 tekens (bijv. per ongeluk spaties/punten in Vercel)
-      raw = raw.replace(/^[^A-Za-z0-9+/=]+|[^A-Za-z0-9+/=]+$/g, "")
-      try {
-        raw = Buffer.from(raw, "base64").toString("utf8")
-      } catch {
-        raw = ""
-      }
-    }
-    const adminPasswordHash = raw
-    if (!adminPasswordHash || !adminPasswordHash.startsWith("$2")) {
-      console.error("Login: ADMIN_PASSWORD_HASH ontbreekt of ongeldig (controleer Vercel → Env vars → Production)")
+    // Admin-gebruiker ophalen uit Supabase (users-tabel, role = admin)
+    const { data: users, error: dbError } = await supabaseAdmin
+      .from("users")
+      .select("id, password_hash, name, role")
+      .eq("role", "admin")
+      .limit(1)
+
+    if (dbError) {
+      console.error("Login Supabase error:", dbError.message)
       return NextResponse.json(
-        { error: "Inloggen is niet geconfigureerd. Neem contact op met de beheerder." },
+        { error: "Inloggen is niet geconfigureerd. Controleer de database (Supabase)." },
         { status: 500 },
       )
     }
 
-    // Constant-time comparison via bcrypt (voorkomt timing attacks)
-    const isValid = await bcrypt.compare(password, adminPasswordHash)
+    const adminUser = users?.[0]
+    if (!adminUser?.password_hash) {
+      console.error("Login: geen admin-gebruiker in Supabase (users-tabel, role=admin)")
+      return NextResponse.json(
+        { error: "Inloggen is niet geconfigureerd. Voeg een admin-gebruiker toe in Supabase." },
+        { status: 500 },
+      )
+    }
+
+    const isValid = await bcrypt.compare(password, adminUser.password_hash)
     if (!isValid) {
       return NextResponse.json({ error: "Ongeldig wachtwoord" }, { status: 401 })
     }
 
     const token = jwt.sign(
-      { sub: "admin", role: "admin" },
+      { sub: "admin", role: "admin", userId: adminUser.id },
       JWT_SECRET,
       { expiresIn: "24h" },
     )
 
     const response = NextResponse.json({
       message: "Login successful",
-      user: { id: "admin", name: "Admin", role: "admin" },
+      user: { id: adminUser.id, name: adminUser.name ?? "Admin", role: adminUser.role ?? "admin" },
     })
 
     response.cookies.set("auth-token", token, {
