@@ -9,7 +9,9 @@ function getSupabaseAdminClient(): SupabaseClient {
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   
   if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error("Missing Supabase environment variables. Please configure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.")
+    throw new Error(
+      "Missing Supabase environment variables. Configure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel: Project → Settings → Environment Variables (Production), then Redeploy."
+    )
   }
   
   if (!_supabaseAdminInstance) {
@@ -46,7 +48,9 @@ export function createClientComponentClient() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error("Missing Supabase environment variables for client")
+    throw new Error(
+      "Missing Supabase environment variables for client. Configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel → Settings → Environment Variables."
+    )
   }
 
   return createClient(supabaseUrl, supabaseAnonKey)
