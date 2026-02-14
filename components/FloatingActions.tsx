@@ -29,7 +29,7 @@ export default function FloatingActions() {
   }, [isOpen])
 
   return (
-    <div className={`floating-actions fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 transition-all duration-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"}`}>
+    <div className={`floating-actions fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-3 transition-all duration-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"}`}>
       {/* Action buttons - visible when open */}
       <div className={`flex flex-col gap-3 mb-2 transition-all duration-300 ${isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}>
         <a

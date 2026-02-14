@@ -13,7 +13,7 @@ export default function HomePage() {
       <Header currentPage="/" />
       
       {/* Hero Section - Video/Image background like rida.nl */}
-      <section className="relative min-h-screen flex items-center justify-center pt-32 pb-20 lg:pt-40 lg:pb-24">
+      <section className="relative min-h-screen flex items-center justify-center pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-24">
         {/* Background image */}
         <div className="absolute inset-0 z-0">
           <img
@@ -25,7 +25,7 @@ export default function HomePage() {
         </div>
 
         {/* Hero content */}
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="max-w-2xl text-white">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full mb-6">
               <Shield className="w-4 h-4" />
@@ -63,8 +63,8 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section - Like rida.nl */}
-      <section className="bg-white py-10 border-b">
-        <div className="container mx-auto px-4">
+      <section className="bg-white py-8 sm:py-10 border-b">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 lg:gap-12">
             <div className="flex items-center gap-4 justify-center sm:justify-start">
               <div className="w-14 h-14 lg:w-16 lg:h-16 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
@@ -98,16 +98,16 @@ export default function HomePage() {
       </section>
 
       {/* Services Section - Card style like rida.nl */}
-      <section id="diensten" className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Ons aanbod</h2>
+      <section id="diensten" className="py-12 md:py-20 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Ons aanbod</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Van onderhoud tot verkoop - wij bieden complete automotive diensten
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
             {/* Occasions Card */}
             <Link href="/occasions" className="group">
               <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
@@ -193,9 +193,9 @@ export default function HomePage() {
       </section>
 
       {/* USPs Section */}
-      <section className="py-16 bg-blue-600">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <section className="py-12 md:py-16 bg-blue-600">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             <div className="flex items-center gap-4 text-white">
               <CheckCircle className="w-8 h-8 flex-shrink-0" />
               <div>
@@ -229,11 +229,11 @@ export default function HomePage() {
       </section>
 
       {/* About Section */}
-      <section id="over-ons" className="py-20 bg-white overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section id="over-ons" className="py-12 md:py-20 bg-white overflow-hidden">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div className="min-w-0">
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Over Autogarage Viorel</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Over Autogarage Viorel</h2>
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
                 Autogarage Viorel is een familiebedrijf dat al jaren actief is in de 
                 automotive sector in Terneuzen. Wij zijn gespecialiseerd in de in- en 
@@ -295,10 +295,10 @@ export default function HomePage() {
       </section>
 
       {/* Services Detail Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Onze diensten</h2>
+      <section className="py-12 md:py-20 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Onze diensten</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Complete automotive diensten onder één dak
             </p>
@@ -352,8 +352,8 @@ export default function HomePage() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
+      <section id="contact" className="py-12 md:py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-2 gap-16">
             <div>
               <h2 className="text-4xl font-bold text-gray-900 mb-6">Contact</h2>

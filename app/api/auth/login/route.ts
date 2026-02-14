@@ -1,9 +1,22 @@
 import { type NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import * as jwt from "jsonwebtoken"
-import { supabaseAdmin } from "@/lib/supabase"
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
+
+/** Haal optionele ADMIN_PASSWORD_HASH uit env (plain $2b$... of base64) */
+function getEnvPasswordHash(): string | null {
+  let raw = (process.env.ADMIN_PASSWORD_HASH ?? "").trim().replace(/\r?\n/g, "").replace(/^["']|["']$/g, "")
+  raw = raw.replace(/^[^A-Za-z0-9+/=]+|[^A-Za-z0-9+/=]+$/g, "")
+  if (!raw) return null
+  if (raw.startsWith("$2")) return raw
+  try {
+    const decoded = Buffer.from(raw, "base64").toString("utf8")
+    return decoded.startsWith("$2") ? decoded : null
+  } catch {
+    return null
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,44 +27,65 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Vul het wachtwoord in." }, { status: 400 })
     }
 
-    // Admin-gebruiker ophalen uit Supabase (users-tabel, role = admin)
-    const { data: users, error: dbError } = await supabaseAdmin
-      .from("users")
-      .select("id, password_hash, name, role")
-      .eq("role", "admin")
-      .limit(1)
+    let adminPasswordHash: string | null = null
+    let adminName = "Admin"
 
-    if (dbError) {
-      console.error("Login Supabase error:", dbError.message)
+    // 1) Probeer admin uit Supabase (users-tabel, role = admin)
+    try {
+      const { createClient } = await import("@supabase/supabase-js")
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+      if (url && key) {
+        const supabase = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } })
+        const { data: users, error } = await supabase
+          .from("users")
+          .select("id, password_hash, name, role")
+          .eq("role", "admin")
+          .limit(1)
+        if (!error && users?.[0]?.password_hash) {
+          adminPasswordHash = users[0].password_hash
+          adminName = users[0].name ?? "Admin"
+        }
+      }
+    } catch (e) {
+      console.error("Login Supabase:", e)
+    }
+
+    // 2) Fallback: ADMIN_PASSWORD_HASH uit env (Vercel/lokaal)
+    if (!adminPasswordHash) {
+      adminPasswordHash = getEnvPasswordHash()
+    }
+
+    if (!adminPasswordHash || !adminPasswordHash.startsWith("$2")) {
+      console.error("Login: no valid admin hash. Supabase admin?", !!adminPasswordHash, "Env hash length:", (process.env.ADMIN_PASSWORD_HASH ?? "").length)
       return NextResponse.json(
-        { error: "Inloggen is niet geconfigureerd. Controleer de database (Supabase)." },
+        {
+          error:
+            "Geen admin-wachtwoord geconfigureerd. Voer in Supabase het script 'scripts/update-admin-password.sql' uit, of zet ADMIN_PASSWORD_HASH in Vercel. Gebruik in Vercel bij voorkeur de base64-waarde (zonder $).",
+        },
         { status: 500 },
       )
     }
 
-    const adminUser = users?.[0]
-    if (!adminUser?.password_hash) {
-      console.error("Login: geen admin-gebruiker in Supabase (users-tabel, role=admin)")
+    let isValid: boolean
+    try {
+      isValid = await bcrypt.compare(password, adminPasswordHash)
+    } catch (bcryptError) {
+      console.error("Login bcrypt.compare error:", bcryptError)
       return NextResponse.json(
-        { error: "Inloggen is niet geconfigureerd. Voeg een admin-gebruiker toe in Supabase." },
+        { error: "Wachtwoordcontrole mislukt. Controleer of ADMIN_PASSWORD_HASH een geldige bcrypt-hash is (of base64 daarvan)." },
         { status: 500 },
       )
     }
-
-    const isValid = await bcrypt.compare(password, adminUser.password_hash)
     if (!isValid) {
       return NextResponse.json({ error: "Ongeldig wachtwoord" }, { status: 401 })
     }
 
-    const token = jwt.sign(
-      { sub: "admin", role: "admin", userId: adminUser.id },
-      JWT_SECRET,
-      { expiresIn: "24h" },
-    )
+    const token = jwt.sign({ sub: "admin", role: "admin" }, JWT_SECRET, { expiresIn: "24h" })
 
     const response = NextResponse.json({
       message: "Login successful",
-      user: { id: adminUser.id, name: adminUser.name ?? "Admin", role: adminUser.role ?? "admin" },
+      user: { id: "admin", name: adminName, role: "admin" },
     })
 
     response.cookies.set("auth-token", token, {
@@ -59,14 +93,15 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 86400, // 24 uur
+      maxAge: 86400,
     })
 
     return response
   } catch (error) {
-    console.error("Login error:", error)
+    const err = error instanceof Error ? error : new Error(String(error))
+    console.error("Login error:", err.message, err.stack)
     return NextResponse.json(
-      { error: "Er is een fout opgetreden. Probeer het later opnieuw." },
+      { error: "Er is een fout opgetreden. Bekijk Vercel → Project → Logs voor details." },
       { status: 500 },
     )
   }

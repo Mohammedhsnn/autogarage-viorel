@@ -167,7 +167,7 @@ export default function OccasionsPage() {
       </section>
 
       {/* Filters Section */}
-      <section className="py-4 lg:py-6 bg-white border-b sticky top-[80px] lg:top-[120px] z-30 shadow-sm">
+      <section className="py-4 lg:py-6 bg-white border-b sticky top-16 lg:top-[120px] z-30 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
             <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 items-stretch sm:items-center">

@@ -59,16 +59,19 @@ export default function Header({ currentPage = "" }: HeaderProps) {
 
       {/* Main navigation */}
       <div className="bg-white">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16 sm:h-20 gap-2">
+            {/* Logo: op mobile alleen tekst, vanaf sm logo + tekst */}
+            <Link href="/" className="flex items-center gap-3 group min-w-0">
               <img
                 src="/logo.png"
-                alt="Autogarage Viorel"
-                className="h-12 w-auto object-contain"
+                alt=""
+                className="h-12 w-auto object-contain hidden sm:block flex-shrink-0"
               />
-              <div className="hidden sm:block">
+              <div className="sm:hidden">
+                <h1 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors truncate">Autogarage Viorel</h1>
+              </div>
+              <div className="hidden sm:block min-w-0">
                 <h1 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Autogarage Viorel</h1>
                 <p className="text-xs text-gray-500">Eerlijk, betaalbaar, betrouwbaar</p>
               </div>
@@ -177,8 +180,8 @@ export default function Header({ currentPage = "" }: HeaderProps) {
       </div>
 
       {/* Mobile menu */}
-      <div className={`lg:hidden bg-white border-t overflow-hidden transition-all duration-300 ${mobileMenuOpen ? "max-h-screen" : "max-h-0"}`}>
-        <div className="container mx-auto px-4 py-4">
+      <div className={`lg:hidden bg-white border-t overflow-y-auto overflow-x-hidden transition-all duration-300 ${mobileMenuOpen ? "max-h-screen" : "max-h-0"}`}>
+        <div className="container mx-auto px-4 sm:px-6 py-4">
           {/* Mobile contact info */}
           <div className="flex flex-col gap-2 pb-4 mb-4 border-b text-sm">
             <a href="tel:+31188809802" className="flex items-center gap-2 text-gray-600">

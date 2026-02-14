@@ -26,9 +26,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="nl" suppressHydrationWarning>
+    <html lang="nl" suppressHydrationWarning className="overflow-x-hidden">
       <body
-        className="font-sans antialiased"
+        className="font-sans antialiased overflow-x-hidden min-h-screen w-full max-w-[100vw]"
         suppressHydrationWarning
         {...{ "cz-shortcut-listen": "true" }}
       >

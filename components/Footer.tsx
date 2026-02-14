@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="bg-gray-900 text-white">
       {/* CTA Banner */}
       <div className="bg-blue-600">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-center md:text-left">
               <h3 className="text-2xl font-bold text-white mb-1">Hulp nodig of vragen?</h3>
@@ -32,8 +32,8 @@ export default function Footer() {
       </div>
 
       {/* Main footer */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12">
           {/* About */}
           <div className="sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3 mb-6">
