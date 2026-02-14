@@ -7,9 +7,12 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
 /** Haal optionele ADMIN_PASSWORD_HASH uit env (plain $2b$... of base64) */
 function getEnvPasswordHash(): string | null {
   let raw = (process.env.ADMIN_PASSWORD_HASH ?? "").trim().replace(/\r?\n/g, "").replace(/^["']|["']$/g, "")
+  if (!raw) return null
+  // Plain bcrypt-hash: gebruik direct (niet strippen, anders verdwijnen de $)
+  if (raw.startsWith("$2")) return raw
+  // Base64: strip alleen rand-tekens die geen base64 zijn
   raw = raw.replace(/^[^A-Za-z0-9+/=]+|[^A-Za-z0-9+/=]+$/g, "")
   if (!raw) return null
-  if (raw.startsWith("$2")) return raw
   try {
     const decoded = Buffer.from(raw, "base64").toString("utf8")
     return decoded.startsWith("$2") ? decoded : null
@@ -57,11 +60,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (!adminPasswordHash || !adminPasswordHash.startsWith("$2")) {
-      console.error("Login: no valid admin hash. Supabase admin?", !!adminPasswordHash, "Env hash length:", (process.env.ADMIN_PASSWORD_HASH ?? "").length)
+      const envLen = (process.env.ADMIN_PASSWORD_HASH ?? "").length
+      console.error("Login: no valid admin hash. Env ADMIN_PASSWORD_HASH length:", envLen)
       return NextResponse.json(
         {
           error:
-            "Geen admin-wachtwoord geconfigureerd. Voer in Supabase het script 'scripts/update-admin-password.sql' uit, of zet ADMIN_PASSWORD_HASH in Vercel. Gebruik in Vercel bij voorkeur de base64-waarde (zonder $).",
+            "Geen admin-wachtwoord op de server. Zet in Vercel → Settings → Environment Variables de variabele ADMIN_PASSWORD_HASH (waarde: base64 JDIyYiQxMCRDOHJDWmxLSjl3TTZ5bE9zOHdqdHZ1Mi9LYWI3V2hzSVNOeG90dmRDQWdIaS8yRno4VHhIRw== voor wachtwoord ViorelAdmin12), daarna Redeploy.",
         },
         { status: 500 },
       )
