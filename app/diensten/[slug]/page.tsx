@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { Phone, CheckCircle, ArrowRight, Wrench } from "lucide-react"
+import { CheckCircle, ArrowRight, Wrench } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
@@ -37,37 +37,29 @@ export default async function DienstenSlugPage({ params }: Props) {
     <div className="min-h-screen bg-white">
       <Header currentPage="/diensten" />
 
-      {/* Hero */}
-      <section className="relative pt-36 pb-14 lg:pt-40 lg:pb-20 bg-gray-900 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=1920&q=80"
-            alt=""
-            className="w-full h-full object-cover opacity-30"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 to-gray-900" />
-        </div>
-        <div className="container mx-auto px-4 relative z-10">
-          <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-            <Link href="/" className="hover:text-white transition-colors">
+      {/* Hero – lichtblauwe sectie bij elke diensten-subpagina */}
+      <section className="pt-36 pb-14 lg:pt-40 lg:pb-20 bg-sky-100">
+        <div className="container mx-auto px-4">
+          <nav className="flex items-center gap-2 text-sm text-sky-700 mb-6">
+            <Link href="/" className="hover:text-sky-900 transition-colors">
               Home
             </Link>
             <span>/</span>
-            <Link href="/diensten" className="hover:text-white transition-colors">
+            <Link href="/diensten" className="hover:text-sky-900 transition-colors">
               Diensten
             </Link>
             <span>/</span>
-            <span className="text-white">{content.title}</span>
+            <span className="text-sky-900 font-medium">{content.title}</span>
           </nav>
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full mb-6">
+            <div className="inline-flex items-center gap-2 bg-sky-200/80 text-sky-900 px-4 py-2 rounded-full mb-6">
               <Wrench className="w-4 h-4" />
               <span className="text-sm font-medium">Dienst</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4 text-balance leading-tight">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4 text-balance leading-tight">
               {content.title}
             </h1>
-            <p className="text-xl text-gray-300 leading-relaxed">
+            <p className="text-xl text-gray-700 leading-relaxed">
               {content.subtitle}
             </p>
           </div>
@@ -109,35 +101,6 @@ export default async function DienstenSlugPage({ params }: Props) {
                 <ArrowRight className="w-4 h-4" />
               </Link>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-16 bg-blue-600">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-              {content.ctaTitle}
-            </h2>
-            <p className="text-blue-100 mb-8">{content.ctaSubtitle}</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="tel:+31188809802">
-                <Button size="lg" className="w-full sm:w-auto bg-white text-blue-600 hover:bg-gray-100">
-                  <Phone className="w-5 h-5 mr-2" />
-                  Bel ons
-                </Button>
-              </a>
-              <Link href="/#contact">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-blue-600 bg-transparent"
-                >
-                  Contact
-                </Button>
-              </Link>
-            </div>
           </div>
         </div>
       </section>

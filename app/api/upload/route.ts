@@ -34,7 +34,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "cars")
+    const allowedFolders = ["cars", "onderdelen"]
+    const folderParam = request.nextUrl.searchParams.get("folder") || "cars"
+    const folder = allowedFolders.includes(folderParam) ? folderParam : "cars"
+    const uploadDir = path.join(process.cwd(), "public", "uploads", folder)
     await fs.mkdir(uploadDir, { recursive: true })
 
     const urls: string[] = []
@@ -56,7 +59,7 @@ export async function POST(request: NextRequest) {
       const filePath = path.join(uploadDir, name)
       const buffer = Buffer.from(await file.arrayBuffer())
       await fs.writeFile(filePath, buffer)
-      urls.push(`/uploads/cars/${name}`)
+      urls.push(`/uploads/${folder}/${name}`)
     }
 
     return NextResponse.json({ success: true, urls })

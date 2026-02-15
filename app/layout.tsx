@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     default: 'Autogarage Viorel',
     template: '%s | Autogarage Viorel',
   },
-  description: 'APK keuringen, onderhoud, reparatie en occasions in Terneuzen. Eerlijk, betaalbaar, betrouwbaar.',
+  description: 'APK keuringen via partner, onderhoud, reparatie en occasions in Terneuzen. Eerlijk, betaalbaar, betrouwbaar.',
   icons: {
     icon: '/favicon.png',
     apple: '/favicon.png',

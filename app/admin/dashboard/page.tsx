@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Car, Plus, Settings, Users, BarChart3, LogOut, Edit, Trash2, Database, AlertTriangle, Wrench } from "lucide-react"
+import { Car, Plus, Settings, Users, BarChart3, LogOut, Edit, Trash2, Database, AlertTriangle, Wrench, Package, Calendar, Eye } from "lucide-react"
 import Link from "next/link"
 import { getStats, getCars, deleteCar } from "@/app/actions"
 
@@ -17,6 +17,7 @@ export default function AdminDashboard() {
     sold_cars: 0,
     total_inventory_value: 0,
   })
+  const [visitorsToday, setVisitorsToday] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -47,6 +48,17 @@ export default function AdminDashboard() {
       const carsData = await getCars({ status: "all" })
       console.log("Cars loaded:", carsData)
       setCars(carsData)
+
+      // Load analytics (bezoekers vandaag)
+      try {
+        const analyticsRes = await fetch("/api/analytics", { credentials: "include" })
+        const analyticsData = await analyticsRes.json()
+        if (analyticsData.success && analyticsData.stats) {
+          setVisitorsToday(analyticsData.stats.today)
+        }
+      } catch {
+        setVisitorsToday(null)
+      }
     } catch (error) {
       console.error("Error loading data:", error)
       setError(error instanceof Error ? error.message : "Unknown error")
@@ -142,7 +154,7 @@ export default function AdminDashboard() {
         {!loading && !error && (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
@@ -192,6 +204,19 @@ export default function AdminDashboard() {
                   </div>
                 </CardContent>
               </Card>
+              <Link href="/admin/analytics">
+                <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Bezoekers vandaag</p>
+                        <p className="text-2xl font-bold text-gray-900">{visitorsToday ?? "–"}</p>
+                      </div>
+                      <Eye className="w-8 h-8 text-sky-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             </div>
 
             {/* Quick Actions */}
@@ -214,6 +239,24 @@ export default function AdminDashboard() {
                   <Button variant="outline">
                     <Wrench className="w-4 h-4 mr-2" />
                     Diensten Beheren
+                  </Button>
+                </Link>
+                <Link href="/admin/onderdelen">
+                  <Button variant="outline">
+                    <Package className="w-4 h-4 mr-2" />
+                    Onderdelen Beheren
+                  </Button>
+                </Link>
+                <Link href="/admin/appointments">
+                  <Button variant="outline">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Afspraken Beheren
+                  </Button>
+                </Link>
+                <Link href="/admin/analytics">
+                  <Button variant="outline">
+                    <Eye className="w-4 h-4 mr-2" />
+                    Analytics
                   </Button>
                 </Link>
                 <Button onClick={loadData} variant="outline">

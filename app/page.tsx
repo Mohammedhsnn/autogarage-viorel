@@ -12,41 +12,46 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Header currentPage="/" />
       
-      {/* Hero Section - Video/Image background like rida.nl */}
-      <section className="relative min-h-screen flex items-center justify-center pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-24">
-        {/* Background image */}
+      {/* Hero Section – lichtblauw, vloeiende overgang naar witte secties */}
+      <section className="relative min-h-screen flex items-center justify-center pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-24 bg-sky-50">
+        {/* Background image – lage opacity, zachte blend */}
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1920&q=80"
             alt="Auto werkplaats"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover opacity-[0.14]"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40 lg:to-transparent"></div>
+          <div 
+            className="absolute inset-0 mix-blend-multiply bg-sky-100/75"
+            aria-hidden
+          />
+          {/* Zachte overgang van lichtblauw naar wit – match met rest van site */}
+          <div className="absolute inset-0 bg-gradient-to-b from-sky-50/60 via-transparent to-white" aria-hidden />
         </div>
 
         {/* Hero content */}
-        <div className="container mx-auto px-4 sm:px-6 relative z-10">
-          <div className="max-w-2xl text-white">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full mb-6">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw]">
+          <div className="max-w-2xl text-gray-900 min-w-0">
+            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-sky-800 border border-sky-200/60 px-4 py-2 rounded-full mb-6">
               <Shield className="w-4 h-4" />
-              <span className="text-sm font-medium">RDW erkend keuringsstation</span>
+              <span className="text-sm font-medium">APK via RDW-erkende partner</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-balance">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-balance text-gray-900">
               Wij zijn uw auto specialist
             </h1>
-            <p className="text-lg sm:text-xl text-gray-200 mb-8 leading-relaxed max-w-xl">
+            <p className="text-lg sm:text-xl text-gray-700 mb-8 leading-relaxed max-w-xl">
               Autogarage Viorel is uw betrouwbare partner voor onderhoud, reparaties, 
               APK keuringen en kwaliteit occasions in Terneuzen en omgeving.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/occasions">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 w-full sm:w-auto">
+                <Button size="lg" className="bg-sky-600 hover:bg-sky-700 text-white px-8 w-full sm:w-auto">
                   Bekijk ons aanbod
                   <ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-              <Link href="#contact">
-                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-gray-900 bg-transparent w-full sm:w-auto">
+              <Link href="/contact">
+                <Button size="lg" variant="outline" className="border-2 border-sky-700 text-sky-800 hover:bg-sky-600 hover:text-white bg-white/70 backdrop-blur-sm w-full sm:w-auto">
                   Contact opnemen
                 </Button>
               </Link>
@@ -54,52 +59,46 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden md:block">
-          <div className="w-8 h-12 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
-            <div className="w-1 h-3 bg-white rounded-full animate-bounce"></div>
-          </div>
-        </div>
       </section>
 
-      {/* Stats Section - Like rida.nl */}
-      <section className="bg-white py-8 sm:py-10 border-b">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 lg:gap-12">
-            <div className="flex items-center gap-4 justify-center sm:justify-start">
-              <div className="w-14 h-14 lg:w-16 lg:h-16 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                <Car className="w-7 h-7 lg:w-8 lg:h-8 text-blue-600" />
+      {/* Stats Section – drie gelijke, symmetrische blokken */}
+      <section className="bg-white py-8 sm:py-10 border-b overflow-hidden">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10">
+            <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left gap-4 py-2">
+              <div className="w-14 h-14 shrink-0 rounded-xl bg-sky-100 flex items-center justify-center">
+                <Car className="w-7 h-7 text-sky-600" />
               </div>
-              <div>
-                <div className="text-2xl lg:text-3xl font-bold text-gray-900">Breed aanbod</div>
-                <div className="text-gray-600 text-sm lg:text-base">Kwaliteit occasions</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 justify-center">
-              <div className="w-14 h-14 lg:w-16 lg:h-16 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                <Award className="w-7 h-7 lg:w-8 lg:h-8 text-blue-600" />
-              </div>
-              <div>
-                <div className="text-2xl lg:text-3xl font-bold text-gray-900">15+ jaar</div>
-                <div className="text-gray-600 text-sm lg:text-base">Ervaring in de regio</div>
+              <div className="min-w-0">
+                <div className="text-base sm:text-lg font-bold text-gray-900 leading-tight">Breed aanbod</div>
+                <div className="text-gray-600 text-sm mt-0.5">Kwaliteit occasions</div>
               </div>
             </div>
-            <div className="flex items-center gap-4 justify-center sm:justify-end">
-              <div className="w-14 h-14 lg:w-16 lg:h-16 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                <Users className="w-7 h-7 lg:w-8 lg:h-8 text-blue-600" />
+            <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left gap-4 py-2">
+              <div className="w-14 h-14 shrink-0 rounded-xl bg-sky-100 flex items-center justify-center">
+                <Award className="w-7 h-7 text-sky-600" />
               </div>
-              <div>
-                <div className="text-2xl lg:text-3xl font-bold text-gray-900">Persoonlijk</div>
-                <div className="text-gray-600 text-sm lg:text-base">Wij staan voor u klaar</div>
+              <div className="min-w-0">
+                <div className="text-base sm:text-lg font-bold text-gray-900 leading-tight">15+ jaar</div>
+                <div className="text-gray-600 text-sm mt-0.5">Ervaring in de regio</div>
+              </div>
+            </div>
+            <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left gap-4 py-2">
+              <div className="w-14 h-14 shrink-0 rounded-xl bg-sky-100 flex items-center justify-center">
+                <Users className="w-7 h-7 text-sky-600" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-base sm:text-lg font-bold text-gray-900 leading-tight">Persoonlijk</div>
+                <div className="text-gray-600 text-sm mt-0.5">Wij staan voor u klaar</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Services Section - Card style like rida.nl */}
-      <section id="diensten" className="py-12 md:py-20 bg-gray-50">
-        <div className="container mx-auto px-4 sm:px-6">
+      {/* Services Section */}
+      <section id="diensten" className="py-12 md:py-20 bg-gray-50 overflow-hidden">
+        <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="text-center mb-10 md:mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Ons aanbod</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -178,8 +177,8 @@ export default function HomePage() {
                 </div>
                 <CardContent className="p-6">
                   <p className="text-gray-600 mb-4">
-                    Officiële RDW erkende APK keuringen met directe reparatie 
-                    mogelijkheid bij afkeuring.
+                    APK keuringen via onze RDW-erkende partner, met directe 
+                    reparatiemogelijkheid bij afkeuring.
                   </p>
                   <span className="text-blue-600 font-semibold flex items-center">
                     APK plannen
@@ -192,36 +191,44 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* USPs Section */}
-      <section className="py-12 md:py-16 bg-blue-600">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            <div className="flex items-center gap-4 text-white">
-              <CheckCircle className="w-8 h-8 flex-shrink-0" />
+      {/* USPs Section – lichtblauw */}
+      <section className="py-12 md:py-16 bg-sky-100 overflow-hidden">
+        <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="w-5 h-5 text-white" />
+              </div>
               <div>
-                <h4 className="font-semibold text-lg">Vaste prijzen</h4>
-                <p className="text-blue-100 text-sm">Geen verrassingen achteraf</p>
+                <h4 className="font-semibold text-lg text-gray-900">Vaste prijzen</h4>
+                <p className="text-sky-700 text-sm">Geen verrassingen achteraf</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 text-white">
-              <CheckCircle className="w-8 h-8 flex-shrink-0" />
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="w-5 h-5 text-white" />
+              </div>
               <div>
-                <h4 className="font-semibold text-lg">BOVAG garantie</h4>
-                <p className="text-blue-100 text-sm">Op al onze occasions</p>
+                <h4 className="font-semibold text-lg text-gray-900">BOVAG garantie</h4>
+                <p className="text-sky-700 text-sm">Op al onze occasions</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 text-white">
-              <CheckCircle className="w-8 h-8 flex-shrink-0" />
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="w-5 h-5 text-white" />
+              </div>
               <div>
-                <h4 className="font-semibold text-lg">RDW erkend</h4>
-                <p className="text-blue-100 text-sm">Officieel keuringsstation</p>
+                <h4 className="font-semibold text-lg text-gray-900">APK via partner</h4>
+                <p className="text-sky-700 text-sm">Samenwerking met RDW-erkend station</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 text-white">
-              <CheckCircle className="w-8 h-8 flex-shrink-0" />
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="w-5 h-5 text-white" />
+              </div>
               <div>
-                <h4 className="font-semibold text-lg">Persoonlijke service</h4>
-                <p className="text-blue-100 text-sm">Altijd bereikbaar</p>
+                <h4 className="font-semibold text-lg text-gray-900">Persoonlijke service</h4>
+                <p className="text-sky-700 text-sm">Altijd bereikbaar</p>
               </div>
             </div>
           </div>
@@ -230,10 +237,10 @@ export default function HomePage() {
 
       {/* About Section */}
       <section id="over-ons" className="py-12 md:py-20 bg-white overflow-hidden">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-            <div className="min-w-0">
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Over Autogarage Viorel</h2>
+        <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+            <div className="min-w-0 order-2 lg:order-1">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">Over Autogarage Viorel</h2>
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
                 Autogarage Viorel is een familiebedrijf dat al jaren actief is in de 
                 automotive sector in Terneuzen. Wij zijn gespecialiseerd in de in- en 
@@ -245,22 +252,22 @@ export default function HomePage() {
                 wij elke klant met respect en professionaliteit.
               </p>
 
-              <div className="grid grid-cols-3 gap-6 mb-8">
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-3xl font-bold text-blue-600 mb-1">15+</div>
-                  <div className="text-sm text-gray-600">Jaar ervaring</div>
+              <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
+                <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
+                  <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">15+</div>
+                  <div className="text-xs sm:text-sm text-gray-600">Jaar ervaring</div>
                 </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-3xl font-bold text-blue-600 mb-1">1000+</div>
-                  <div className="text-sm text-gray-600">Tevreden klanten</div>
+                <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
+                  <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">1000+</div>
+                  <div className="text-xs sm:text-sm text-gray-600">Tevreden klanten</div>
                 </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-3xl font-bold text-blue-600 mb-1">100%</div>
-                  <div className="text-sm text-gray-600">Inzet</div>
+                <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
+                  <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">100%</div>
+                  <div className="text-xs sm:text-sm text-gray-600">Inzet</div>
                 </div>
               </div>
 
-              <Link href="#contact">
+              <Link href="/contact">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
                   Neem contact op
                   <ChevronRight className="w-5 h-5 ml-2" />
@@ -268,7 +275,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="relative min-w-0 order-first lg:order-none">
+            <div className="relative min-w-0 order-1 lg:order-2">
               <div className="relative aspect-[4/3] min-h-[280px] w-full overflow-hidden rounded-2xl shadow-2xl bg-gray-200">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -295,8 +302,8 @@ export default function HomePage() {
       </section>
 
       {/* Services Detail Section */}
-      <section className="py-12 md:py-20 bg-gray-50">
-        <div className="container mx-auto px-4 sm:px-6">
+      <section className="py-12 md:py-20 bg-gray-50 overflow-hidden">
+        <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="text-center mb-10 md:mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Onze diensten</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -321,7 +328,7 @@ export default function HomePage() {
                   <Shield className="w-8 h-8 text-blue-600" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2 text-gray-900">APK Keuring</h3>
-                <p className="text-sm text-gray-600">RDW erkend keuringsstation</p>
+                <p className="text-sm text-gray-600">Via RDW-erkende partner</p>
               </CardContent>
             </Card>
 
@@ -352,11 +359,11 @@ export default function HomePage() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-12 md:py-20 bg-white">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid lg:grid-cols-2 gap-16">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Contact</h2>
+      <section id="contact" className="py-12 md:py-20 bg-white overflow-hidden">
+        <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
+            <div className="min-w-0">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">Contact</h2>
               <p className="text-lg text-gray-600 mb-8">
                 Heeft u vragen of wilt u een afspraak maken? Neem gerust contact met ons op!
               </p>
@@ -381,8 +388,8 @@ export default function HomePage() {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900 mb-1">Telefoon</div>
-                    <a href="tel:+31188809802" className="text-blue-600 hover:underline">
-                      +31 (0)18 80 98 02
+                    <a href="tel:+31618809802" className="text-blue-600 hover:underline">
+                      +31 (6)18 80 98 02
                     </a>
                   </div>
                 </div>
@@ -394,32 +401,31 @@ export default function HomePage() {
                   <div>
                     <div className="font-semibold text-gray-900 mb-1">Openingstijden</div>
                     <div className="text-gray-600">
-                      Maandag - Vrijdag: 08:00 - 17:00<br />
-                      Zaterdag: 09:00 - 15:00<br />
+                      Maandag - Zaterdag: 09:00 - 17:00<br />
                       Zondag: Gesloten
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Kaart: Autogarage Viorel, Ambachtsstraat 1-A, Terneuzen */}
-              <div className="mt-8 rounded-xl overflow-hidden shadow-lg">
+              {/* Kaart */}
+              <div className="mt-6 sm:mt-8 rounded-xl overflow-hidden shadow-lg min-h-[200px] sm:min-h-[250px]">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1922.0894993170316!2d3.845279449749082!3d51.30937381551679!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c4804169494e63%3A0x3953f04c913435b6!2sAutobedrijf%20Viorel!5e1!3m2!1sen!2snl!4v1770891996736!5m2!1sen!2snl"
                   width="100%"
                   height="250"
-                  style={{ border: 0 }}
+                  style={{ border: 0, minHeight: 200 }}
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   title="Autogarage Viorel – Ambachtsstraat 1-A, 4538 AV Terneuzen"
-                  className="w-full"
+                  className="w-full h-[200px] sm:h-[250px]"
                 ></iframe>
               </div>
             </div>
 
-            <div className="bg-gray-50 p-8 rounded-2xl">
-              <h3 className="text-2xl font-semibold mb-6 text-gray-900">Stuur ons een bericht</h3>
+            <div className="bg-gray-50 p-5 sm:p-8 rounded-2xl min-w-0">
+              <h3 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-900">Stuur ons een bericht</h3>
               <form className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
@@ -446,6 +452,7 @@ export default function HomePage() {
                     <option>Occasions</option>
                     <option>Onderhoud / Reparatie</option>
                     <option>APK Keuring</option>
+                    <option>Laswerk / Carrosserie</option>
                     <option>Auto verkopen</option>
                     <option>Anders</option>
                   </select>

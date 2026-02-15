@@ -23,11 +23,11 @@ function slugFromLabel(label: string): string {
 const PAGINAS: Record<string, DienstenPaginaContent> = {
   "apk-service": {
     title: "APK Keuring",
-    subtitle: "RDW-erkend keuringsstation voor een snelle en betrouwbare APK",
+    subtitle: "APK via onze RDW-erkende partner voor een snelle en betrouwbare keuring",
     intro:
-      "Bij Autogarage Viorel kunt u terecht voor uw periodieke APK-keuring. Wij zijn een RDW-erkend keuringsstation en voeren de keuring vakkundig en transparant uit. Loopt uw APK bijna af? Maak een afspraak en rij weer zorgeloos de weg op.",
+      "Bij Autogarage Viorel kunt u terecht voor uw periodieke APK-keuring. Wij werken samen met een RDW-erkend keuringsstation en regelen de keuring voor u vakkundig en transparant. Loopt uw APK bijna af? Maak een afspraak en rij weer zorgeloos de weg op.",
     features: [
-      "RDW-erkend keuringsstation",
+      "Samenwerking met RDW-erkend keuringsstation",
       "Snelle afhandeling, vaak dezelfde dag nog mogelijk",
       "Transparante prijzen, geen verrassingen",
       "Uitleg bij eventuele gebreken en advies voor reparatie",
@@ -40,9 +40,11 @@ const PAGINAS: Record<string, DienstenPaginaContent> = {
     title: "Import & Export",
     subtitle: "Ondersteuning bij in- en uitvoer van uw voertuig",
     intro:
-      "Wilt u een auto importeren uit het buitenland of uw voertuig exporteren? Wij helpen u graag met de benodigde documenten, keuringen en administratie. Zo regelt u uw import of export zonder gedoe.",
+      "Wilt u een auto importeren uit het buitenland of uw voertuig exporteren? Wij helpen u graag met de benodigde documenten, keuringen en administratie. Ook regelen wij voor u de 14 dagen verzekering en het transit nummerplaat (transitkenteken), zodat u uw voertuig tijdelijk en verzekerd op de weg kunt zetten. Zo regelt u uw import of export zonder gedoe.",
     features: [
       "Advisering bij import en export",
+      "14 dagen verzekering voor geïmporteerde voertuigen",
+      "Transit nummerplaat (transitkenteken) voor tijdelijk gebruik",
       "Ondersteuning bij omzetting en keuring",
       "Hulp bij documenten en RDW-procedures",
       "Ervaring met diverse landen en voertuigen",
@@ -148,6 +150,21 @@ const PAGINAS: Record<string, DienstenPaginaContent> = {
     ctaTitle: "Kentekenplaat nodig?",
     ctaSubtitle: "Kom langs of bel even voor beschikbaarheid.",
   },
+  laswerk: {
+    title: "Laswerk",
+    subtitle: "Carrosserie herstellen en professioneel laswerk",
+    intro:
+      "Heeft u laswerk nodig aan uw auto? Wij voeren carrosserieherstel en laswerkzaamheden uit. Van kleine reparaties aan plaatwerk tot uitlaatreparaties en het herstellen van roest of schade. Met vakmanschap en de juiste apparatuur zorgen wij voor een solide en nette afwerking.",
+    features: [
+      "Carrosserie herstellen: plaatwerk, deuren, spatborden",
+      "Uitlaat repareren of aanpassen door lassen",
+      "Roestherstel en versterking van zwakke plekken",
+      "Professioneel laswerk voor staal en RVS",
+      "Eerlijke prijsopgave vooraf",
+    ],
+    ctaTitle: "Laswerk of carrosserieherstel nodig?",
+    ctaSubtitle: "Bel of kom langs voor een vrijblijvende offerte.",
+  },
   reparatie: {
     title: "Reparatie",
     subtitle: "Vakkundige reparaties voor alle merken",
@@ -187,6 +204,7 @@ export const DIENSTEN_DROPDOWN_LABELS = [
   "Olie verversen",
   "Onderhoud / Herstel",
   "Schokdempers / Uitlaten",
+  "Laswerk",
   "Trekhaak Montage",
   "Kentekenplaten",
   "Reparatie",

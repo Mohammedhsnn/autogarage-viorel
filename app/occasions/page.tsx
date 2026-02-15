@@ -127,7 +127,7 @@ export default function OccasionsPage() {
       <Header currentPage="/occasions" />
 
       {/* Hero Section */}
-      <section className="relative pt-36 pb-16 lg:pt-40 lg:pb-20 bg-gray-900">
+      <section className="relative pt-28 sm:pt-36 pb-12 sm:pb-16 lg:pt-40 lg:pb-20 bg-gray-900 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80"
@@ -135,8 +135,8 @@ export default function OccasionsPage() {
             className="w-full h-full object-cover opacity-30"
           />
         </div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw]">
+          <div className="max-w-3xl min-w-0">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full mb-6">
               <CheckCircle className="w-4 h-4" />
               <span className="text-sm font-medium">Alle auto's met garantie</span>
@@ -147,7 +147,7 @@ export default function OccasionsPage() {
               grondig gecontroleerd en komen met garantie.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="tel:+31188809802">
+              <a href="tel:+31618809802">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
                   <Phone className="w-5 h-5 mr-2" />
                   Bel voor advies
@@ -167,11 +167,11 @@ export default function OccasionsPage() {
       </section>
 
       {/* Filters Section */}
-      <section className="py-4 lg:py-6 bg-white border-b sticky top-16 lg:top-[120px] z-30 shadow-sm">
-        <div className="container mx-auto px-4">
+      <section className="py-4 lg:py-6 bg-white border-b sticky top-14 lg:top-[120px] z-30 shadow-sm overflow-hidden">
+        <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 items-stretch sm:items-center">
-              <div className="grid grid-cols-2 sm:flex gap-3 lg:gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 items-stretch sm:items-center flex-wrap">
+              <div className="grid grid-cols-2 sm:flex gap-2 sm:gap-3 lg:gap-4 w-full sm:w-auto">
                 <Select value={filterBrand} onValueChange={setFilterBrand}>
                   <SelectTrigger className="w-full sm:w-40 lg:w-44 bg-white">
                     <SelectValue placeholder="Alle merken" />
@@ -201,9 +201,9 @@ export default function OccasionsPage() {
                 </Select>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="flex-1 sm:w-48 lg:w-52 bg-white">
+                  <SelectTrigger className="w-full sm:w-48 lg:w-52 bg-white min-h-[44px]">
                     <SelectValue placeholder="Sorteren" />
                   </SelectTrigger>
                   <SelectContent>
@@ -216,14 +216,14 @@ export default function OccasionsPage() {
                 </Select>
 
                 {(filterBrand !== "all" || filterFuel !== "all") && (
-                  <Button variant="ghost" onClick={resetFilters} className="text-gray-600 whitespace-nowrap">
+                  <Button variant="ghost" onClick={resetFilters} className="text-gray-600 whitespace-nowrap w-full sm:w-auto min-h-[44px]">
                     Filters wissen
                   </Button>
                 )}
               </div>
             </div>
 
-            <div className="text-sm text-gray-600 font-medium text-center lg:text-right">
+            <div className="text-sm text-gray-600 font-medium text-center lg:text-right w-full lg:w-auto">
               {filteredCars.length} auto{filteredCars.length !== 1 ? "'s" : ""} gevonden
             </div>
           </div>
@@ -266,8 +266,8 @@ export default function OccasionsPage() {
 
       {/* Cars Grid */}
       {!loading && !error && (
-        <section className="py-12 bg-gray-50">
-          <div className="container mx-auto px-4">
+        <section className="py-8 sm:py-12 bg-gray-50 overflow-hidden">
+          <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
             {filteredCars.length === 0 ? (
               <div className="text-center py-16">
                 <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -289,16 +289,16 @@ export default function OccasionsPage() {
                       Filters wissen
                     </Button>
                   )}
-                  <a href="tel:+31188809802">
+                  <Link href="/contact">
                     <Button className="bg-blue-600 hover:bg-blue-700">
                       <Phone className="w-4 h-4 mr-2" />
                       Contact
                     </Button>
-                  </a>
+                  </Link>
                 </div>
               </div>
             ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
                 {filteredCars.map((car) => (
                   <Link key={car.id} href={`/occasions/${car.id}`}>
                     <Card className="group h-full border-0 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden bg-white cursor-pointer">

@@ -99,13 +99,13 @@ export default async function OccasionDetailPage({ params }: Props) {
                 <span className="text-gray-500">Vraagprijs</span>
               </div>
               <div className="flex flex-wrap gap-3">
-                <a href="tel:+31188809802">
+                <a href="tel:+31618809802">
                   <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
                     <Phone className="w-5 h-5 mr-2" />
                     Bel voor informatie
                   </Button>
                 </a>
-                <Link href="/#contact">
+                <Link href="/contact">
                   <Button size="lg" variant="outline">
                     <Mail className="w-5 h-5 mr-2" />
                     Proefrit aanvragen
@@ -210,18 +210,18 @@ export default async function OccasionDetailPage({ params }: Props) {
               Neem contact op voor meer informatie of om een proefrit in te plannen. Wij staan u graag te woord.
             </p>
             <div className="flex flex-wrap gap-4">
-              <a href="tel:+31188809802">
+              <a href="tel:+31618809802">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
                   <Phone className="w-5 h-5 mr-2" />
-                  +31 (0)18 80 98 02
+                  Bel ons
                 </Button>
               </a>
-              <a href="mailto:info@autogarageviorel.nl">
+              <Link href="/contact">
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-gray-900">
                   <Mail className="w-5 h-5 mr-2" />
-                  E-mail sturen
+                  Contact
                 </Button>
-              </a>
+              </Link>
             </div>
             <div className="mt-6 flex items-center gap-2 text-gray-400 text-sm">
               <MapPin className="w-4 h-4" />

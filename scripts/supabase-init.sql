@@ -7,6 +7,9 @@
 
 -- Verwijder in juiste volgorde (vanwege foreign keys)
 DROP TABLE IF EXISTS page_content CASCADE;
+DROP TABLE IF EXISTS page_views CASCADE;
+DROP TABLE IF EXISTS appointments CASCADE;
+DROP TABLE IF EXISTS onderdelen CASCADE;
 DROP TABLE IF EXISTS services CASCADE;
 DROP TABLE IF EXISTS car_features CASCADE;
 DROP TABLE IF EXISTS car_images CASCADE;
@@ -87,6 +90,56 @@ CREATE TABLE services (
 CREATE INDEX IF NOT EXISTS idx_services_category ON services(category);
 CREATE INDEX IF NOT EXISTS idx_services_active ON services(is_active);
 CREATE INDEX IF NOT EXISTS idx_services_sort ON services(sort_order);
+
+-- onderdelen: voor /onderdelen zoekpagina en admin
+CREATE TABLE onderdelen (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  artikelnummer VARCHAR(100),
+  merk VARCHAR(100),
+  motorcode VARCHAR(100),
+  versnellingsbakcode VARCHAR(100),
+  chassisnummer VARCHAR(100),
+  kba_nummer VARCHAR(100),
+  category VARCHAR(100) DEFAULT 'overig',
+  price INTEGER,
+  image_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_onderdelen_merk ON onderdelen(merk);
+CREATE INDEX IF NOT EXISTS idx_onderdelen_artikelnummer ON onderdelen(artikelnummer);
+CREATE INDEX IF NOT EXISTS idx_onderdelen_active ON onderdelen(is_active);
+
+-- appointments: online afspraak boeking (/afspraak en admin)
+CREATE TABLE appointments (
+  id SERIAL PRIMARY KEY,
+  appointment_date DATE NOT NULL,
+  time_slot VARCHAR(5) NOT NULL,
+  service VARCHAR(100) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(50) NOT NULL,
+  vehicle_info VARCHAR(255),
+  notes TEXT,
+  status VARCHAR(20) DEFAULT 'confirmed',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX idx_appointments_date_slot ON appointments(appointment_date, time_slot) WHERE status != 'cancelled';
+CREATE INDEX idx_appointments_date ON appointments(appointment_date);
+CREATE INDEX idx_appointments_status ON appointments(status);
+
+-- page_views: voor analytics (bezoekers in /admin)
+CREATE TABLE page_views (
+  id BIGSERIAL PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  path VARCHAR(500) NOT NULL
+);
+CREATE INDEX idx_page_views_created_at ON page_views(created_at);
+CREATE INDEX idx_page_views_path ON page_views(path);
 
 -- page_content: bewerkbare teksten per pagina (o.a. /diensten)
 CREATE TABLE page_content (
