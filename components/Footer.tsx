@@ -148,8 +148,8 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom bar - stacked on mobile, row on desktop */}
-      <div className="border-t border-gray-800">
+      {/* Bottom bar - stacked on mobile, row on desktop; relative z-[50] zodat taps op Articx Software niet door FloatingActions (Route/Maps) worden opgevangen op telefoon */}
+      <div className="relative z-[50] border-t border-gray-800">
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-6 max-w-[100vw]">
           <div className="flex flex-col md:flex-row md:items-baseline gap-4 md:gap-0 text-center">
             <p className="text-gray-500 text-xs sm:text-sm order-2 md:order-1 md:flex-1 md:text-left">

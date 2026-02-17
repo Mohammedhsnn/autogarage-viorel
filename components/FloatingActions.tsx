@@ -13,7 +13,7 @@ export default function FloatingActions() {
   if (pathname === "/afspraak") return null
 
   useEffect(() => {
-    const HIDE_NEAR_BOTTOM_PX = 220
+    const HIDE_NEAR_BOTTOM_PX = 420
     const handleScroll = () => {
       const scrollY = window.scrollY || 0
       const docHeight = document.documentElement?.scrollHeight || 0
