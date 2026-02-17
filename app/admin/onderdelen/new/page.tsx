@@ -212,7 +212,7 @@ export default function NewOnderdeelPage() {
         <Card>
           <CardHeader>
             <CardTitle>Gegevens onderdeel</CardTitle>
-            <CardDescription>Dit onderdeel verschijnt op de zoekpagina /onderdelen.</CardDescription>
+            <CardDescription>Dit onderdeel verschijnt bij zoeken naar onderdelen op /onderdelen.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">

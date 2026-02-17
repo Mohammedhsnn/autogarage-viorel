@@ -217,24 +217,26 @@ export default function Header({ currentPage = "" }: HeaderProps) {
                   className={`w-4 h-4 transition-transform ${mobileDienstenOpen ? "rotate-90" : ""}`}
                 />
               </button>
-              <div className={`overflow-hidden transition-all ${mobileDienstenOpen ? "max-h-[500px]" : "max-h-0"}`}>
-                <Link
-                  href="/diensten"
-                  className="block py-2 pl-6 pr-4 text-gray-600 hover:bg-gray-50 rounded-lg"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Alle diensten
-                </Link>
-                {DIENSTEN_DROPDOWN_LABELS.map((label) => (
+              <div className={`overflow-hidden transition-all ${mobileDienstenOpen ? "max-h-[min(60vh,380px)]" : "max-h-0"}`}>
+                <div className="overflow-y-auto max-h-[min(60vh,380px)] py-1 -mr-1">
                   <Link
-                    key={label}
-                    href={`/diensten/${getSlugForLabel(label)}`}
-                    className="block py-2 pl-6 pr-4 text-gray-600 hover:bg-gray-50 rounded-lg"
+                    href="/diensten"
+                    className="block py-2.5 pl-6 pr-4 text-gray-600 hover:bg-gray-50 active:bg-gray-100 rounded-lg min-h-[44px] flex items-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    {label}
+                    Alle diensten
                   </Link>
-                ))}
+                  {DIENSTEN_DROPDOWN_LABELS.map((label) => (
+                    <Link
+                      key={label}
+                      href={`/diensten/${getSlugForLabel(label)}`}
+                      className="block py-2.5 pl-6 pr-4 text-gray-600 hover:bg-gray-50 active:bg-gray-100 rounded-lg min-h-[44px] flex items-center"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
             <Link

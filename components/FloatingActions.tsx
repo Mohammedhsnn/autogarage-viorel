@@ -29,9 +29,9 @@ export default function FloatingActions() {
   }, [isOpen])
 
   return (
-    <div className={`floating-actions fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end gap-3 transition-all duration-300 max-w-[100vw] ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"}`}>
-      {/* Action buttons - visible when open */}
-      <div className={`flex flex-col gap-3 mb-2 transition-all duration-300 ${isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}>
+    <div className={`floating-actions fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end gap-3 transition-all duration-300 max-w-[100vw] pointer-events-none ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+      {/* Action buttons - visible when open; pointer-events-auto so only these receive taps */}
+      <div className={`flex flex-col gap-3 mb-2 transition-all duration-300 pointer-events-auto ${isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}>
         <a
           href="tel:+31618809802"
           className="flex items-center gap-3 bg-white rounded-full shadow-lg px-4 py-3 hover:shadow-xl hover:scale-105 transition-all"
@@ -79,10 +79,10 @@ export default function FloatingActions() {
         </a>
       </div>
 
-      {/* Main toggle button - min 48px touch target */}
+      {/* Main toggle button - min 48px touch target; pointer-events-auto so page taps pass through when closed */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-14 h-14 min-w-[56px] min-h-[56px] rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 touch-manipulation ${
+        className={`pointer-events-auto w-14 h-14 min-w-[56px] min-h-[56px] rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 touch-manipulation ${
           isOpen 
             ? "bg-gray-900 hover:bg-gray-800 rotate-90" 
             : "bg-blue-600 hover:bg-blue-700"

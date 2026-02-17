@@ -83,7 +83,7 @@ export default function AdminOnderdelenPage() {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold text-gray-900">Onderdelen Beheren</h1>
-                  <p className="text-sm text-gray-500">Beheer onderdelen voor de zoekpagina</p>
+                  <p className="text-sm text-gray-500">Zoeken naar onderdelen – beheer de voorraad</p>
                 </div>
               </div>
             </div>

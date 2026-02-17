@@ -168,7 +168,7 @@ export default function AfspraakPage() {
         </div>
       </section>
 
-      <section className="py-10 sm:py-12 lg:py-16 bg-gray-50 overflow-hidden">
+      <section className="relative z-10 py-10 sm:py-12 lg:py-16 bg-gray-50 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="max-w-xl mx-auto min-w-0">
             {/* Stappen */}

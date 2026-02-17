@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Package, Search, Phone, Loader2, AlertCircle, Car, Fuel, Gauge, ChevronRight } from "lucide-react"
+import { Package, Search, Phone, Loader2, AlertCircle, Fuel, Gauge, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -80,6 +80,8 @@ export default function OnderdelenPage() {
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [autosoort, setAutosoort] = useState<string | null>(null)
+  const [kentekenLookupLoading, setKentekenLookupLoading] = useState(false)
 
   const [voertuigen, setVoertuigen] = useState<Voertuig[]>([])
   const [voertuigenLoading, setVoertuigenLoading] = useState(true)
@@ -123,6 +125,32 @@ export default function OnderdelenPage() {
     [kenteken, merk, artikelnummer, motorcode, versnellingsbakcode, chassisnummer, kbaNummer, category, vrijeTekst].some(
       (v) => v && String(v).trim()
     )
+
+  const lookupKenteken = async () => {
+    const raw = kenteken.replace(/[\s\-\.]/g, "").toUpperCase()
+    if (raw.length < 4) {
+      setAutosoort(null)
+      return
+    }
+    setKentekenLookupLoading(true)
+    setAutosoort(null)
+    try {
+      const res = await fetch(`/api/kenteken-lookup?kenteken=${encodeURIComponent(raw)}`)
+      const data = await res.json()
+      if (data.success && data.autosoort) {
+        setAutosoort(data.autosoort)
+        if (data.merk && MERKEN.some((m) => m.toLowerCase() === String(data.merk).toLowerCase())) {
+          setMerk(data.merk)
+        }
+      } else if (data.success && data.message) {
+        setAutosoort(null)
+      }
+    } catch {
+      setAutosoort(null)
+    } finally {
+      setKentekenLookupLoading(false)
+    }
+  }
 
   const doSearch = async () => {
     if (!hasSearch()) {
@@ -177,7 +205,7 @@ export default function OnderdelenPage() {
           <div className="max-w-3xl min-w-0">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full mb-4 sm:mb-6">
               <Package className="w-4 h-4 flex-shrink-0" />
-              <span className="text-sm font-medium">Auto-onderdelen zoeken</span>
+              <span className="text-sm font-medium">Zoeken naar onderdelen</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
               Onderdelen voorraad
@@ -193,7 +221,7 @@ export default function OnderdelenPage() {
       <section className="py-8 sm:py-10 lg:py-14 bg-slate-50 border-b overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="max-w-4xl mx-auto min-w-0">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Auto-onderdelen zoeken</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Zoeken naar onderdelen</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <Label htmlFor="kenteken">Kenteken</Label>
@@ -201,9 +229,24 @@ export default function OnderdelenPage() {
                   id="kenteken"
                   placeholder="Bijv. AB-123-CD"
                   value={kenteken}
-                  onChange={(e) => setKenteken(e.target.value)}
+                  onChange={(e) => {
+                    setKenteken(e.target.value)
+                    if (e.target.value.replace(/[\s\-\.]/g, "").length < 4) setAutosoort(null)
+                  }}
+                  onBlur={lookupKenteken}
                   className="bg-white"
                 />
+                {kentekenLookupLoading && (
+                  <p className="text-sm text-gray-500 flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Voertuig opzoeken…
+                  </p>
+                )}
+                {autosoort && !kentekenLookupLoading && (
+                  <p className="text-sm text-blue-700 font-medium">
+                    Voertuig: {autosoort}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="merk">Merk</Label>
@@ -322,6 +365,7 @@ export default function OnderdelenPage() {
                   setKbaNummer("")
                   setCategory("")
                   setVrijeTekst("")
+                  setAutosoort(null)
                   setSearched(false)
                   setOnderdelen([])
                 }}
@@ -416,15 +460,15 @@ export default function OnderdelenPage() {
       </section>
       )}
 
-      {/* Voertuigen aanbod (zoals onderdelenlijn.nl/voertuigen) */}
+      {/* Onderdelen aanbod */}
       <section className="py-12 lg:py-16 bg-slate-50 border-t">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Filters sidebar */}
             <aside className="lg:w-56 flex-shrink-0">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Voertuigen aanbod</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Onderdelen aanbod</h2>
               <p className="text-sm text-gray-600 mb-4">
-                Bekijk ons aanbod. Voor onderdelen van een specifiek voertuig kunt u boven zoeken of ons bellen.
+                Bekijk ons aanbod. Zoek hierboven naar onderdelen op kenteken of artikelnummer, of bel ons voor een aanvraag.
               </p>
               {!voertuigenLoading && (
                 <>
@@ -484,7 +528,7 @@ export default function OnderdelenPage() {
                   ) : (
                     <span className="font-medium text-gray-900">{filteredVoertuigen.length}</span>
                   )}{" "}
-                  {!voertuigenLoading && "voertuigen"}
+                  {!voertuigenLoading && "onderdelen"}
                 </p>
                 {!voertuigenLoading && (filterVoertuigMerk !== "all" || filterVoertuigFuel !== "all") && (
                   <Button
@@ -507,8 +551,8 @@ export default function OnderdelenPage() {
               ) : filteredVoertuigen.length === 0 ? (
                 <Card>
                   <CardContent className="p-12 text-center">
-                    <Car className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Geen voertuigen gevonden met de gekozen filters.</p>
+                    <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600">Geen onderdelen gevonden met de gekozen filters.</p>
                   </CardContent>
                 </Card>
               ) : (

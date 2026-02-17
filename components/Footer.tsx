@@ -151,22 +151,22 @@ export default function Footer() {
       {/* Bottom bar - stacked on mobile, row on desktop */}
       <div className="border-t border-gray-800">
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-6 max-w-[100vw]">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 text-center md:text-left">
-            <p className="text-gray-500 text-xs sm:text-sm order-2 md:order-1 md:flex-1">
+          <div className="flex flex-col md:flex-row md:items-baseline gap-4 md:gap-0 text-center">
+            <p className="text-gray-500 text-xs sm:text-sm order-2 md:order-1 md:flex-1 md:text-left">
               © {new Date().getFullYear()} Autogarage Viorel. Alle rechten voorbehouden.
             </p>
-            <p className="text-gray-500 text-xs sm:text-sm order-1 md:order-2 md:flex-1">
+            <p className="text-gray-500 text-xs sm:text-sm order-1 md:order-2 md:flex-1 md:flex md:justify-center md:items-baseline">
               Gemaakt door{" "}
               <a
                 href="https://articxsoftware.nl"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="inline-block text-gray-400 hover:text-white transition-colors px-1.5 py-1 rounded cursor-pointer touch-manipulation"
               >
                 Articx Software
               </a>
             </p>
-            <div className="flex items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm order-3 md:flex-1 md:justify-end flex-wrap">
+            <div className="flex items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm order-3 md:flex-1 md:justify-end flex-wrap md:items-baseline">
               <Link href="#" className="text-gray-500 hover:text-white transition-colors py-1">
                 Privacy Policy
               </Link>

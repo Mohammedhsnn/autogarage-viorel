@@ -348,8 +348,7 @@ export default function DienstenPage() {
                     </div>
                   )}
                   <CardContent className="p-8 text-center flex flex-col flex-1">
-                    <h3 className="text-2xl font-bold mb-4 text-gray-900">{s.name}</h3>
-                    <div className={`text-4xl font-bold mb-6 ${textColor}`}>{s.price_label}</div>
+                    <h3 className="text-2xl font-bold mb-6 text-gray-900">{s.name}</h3>
                     <ul className="space-y-3 mb-8 text-left flex-1">
                       {s.features.map((f, i) => (
                         <li key={i} className="flex items-center gap-3">

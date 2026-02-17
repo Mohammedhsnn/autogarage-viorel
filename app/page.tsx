@@ -112,7 +112,7 @@ export default function HomePage() {
               <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80"
+                    src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&q=80"
                     alt="Occasions"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
