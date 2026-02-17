@@ -162,7 +162,7 @@ export default function HomePage() {
             </Link>
 
             {/* APK Card */}
-            <Link href="/diensten" className="group">
+            <Link href="/afspraak" className="group">
               <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
                 <div className="relative h-48 overflow-hidden">
                   <img

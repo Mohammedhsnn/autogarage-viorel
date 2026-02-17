@@ -9,8 +9,8 @@ export default function FloatingActions() {
   const [isOpen, setIsOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
 
-  // Op /afspraak niet tonen: op telefoon overlapt de knop de datum/tijd-keuze en opent per ongeluk WhatsApp/e-mail
-  if (pathname === "/afspraak") return null
+  // Niet tonen op homepage en /afspraak: op telefoon vangen de knoppen anders taps op cards/links op (Maps/WhatsApp i.p.v. dienst)
+  if (pathname === "/" || pathname === "/afspraak") return null
 
   useEffect(() => {
     const HIDE_NEAR_BOTTOM_PX = 420
@@ -41,7 +41,7 @@ export default function FloatingActions() {
   }, [isOpen])
 
   return (
-    <div className={`floating-actions fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end gap-3 transition-all duration-300 max-w-[100vw] pointer-events-none ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+    <div className={`floating-actions fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 w-fit max-w-[min(100vw,16rem)] flex flex-col items-end gap-3 transition-all duration-300 pointer-events-none ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
       {/* Action buttons - visible when open; pointer-events-auto so only these receive taps */}
       <div className={`flex flex-col gap-3 mb-2 transition-all duration-300 pointer-events-auto ${isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}>
         <a
