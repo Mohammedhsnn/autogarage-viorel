@@ -13,8 +13,15 @@ export default function FloatingActions() {
   if (pathname === "/afspraak") return null
 
   useEffect(() => {
+    const HIDE_NEAR_BOTTOM_PX = 220
     const handleScroll = () => {
-      setIsVisible(window.scrollY > 300)
+      const scrollY = window.scrollY || 0
+      const docHeight = document.documentElement?.scrollHeight || 0
+      const nearBottom = scrollY + window.innerHeight >= docHeight - HIDE_NEAR_BOTTOM_PX
+
+      // Verberg bij de footer zodat footer-links (zoals "Articx Software") niet per ongeluk WhatsApp/E-mail openen.
+      setIsVisible(scrollY > 300 && !nearBottom)
+      if (nearBottom) setIsOpen(false)
     }
     window.addEventListener("scroll", handleScroll)
     handleScroll()
