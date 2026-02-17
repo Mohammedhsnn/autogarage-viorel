@@ -1,11 +1,16 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { Phone, Mail, MapPin, MessageCircle, X } from "lucide-react"
 
 export default function FloatingActions() {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+
+  // Op /afspraak niet tonen: op telefoon overlapt de knop de datum/tijd-keuze en opent per ongeluk WhatsApp/e-mail
+  if (pathname === "/afspraak") return null
 
   useEffect(() => {
     const handleScroll = () => {
