@@ -44,6 +44,10 @@ Het wachtwoord voor `/admin` staat in Supabase in de tabel **users** (rij met `r
 - **004-create-services-table.sql** – Alleen de **services**-tabel toevoegen als die nog ontbreekt.
 - **006-page-content.sql** – Alleen **page_content**-tabel + seed. Overbodig als je **supabase-init.sql** al hebt gedraaid.
 
+## Foto-uploads (admin: auto's / onderdelen)
+
+De app uploadt foto's naar **Supabase Storage** (werkt ook op Vercel). Eenmalig: in Supabase → **Storage** → **New bucket** → naam **`uploads`**, **Public bucket** aanvinken. Zonder deze bucket werken foto-uploads bij "Auto toevoegen" / onderdelen niet.
+
 ## Connectie controleren
 
 - **Lokaal:** Zet in `.env.local` de drie Supabase-variabelen (zie `.env.example`), herstart `npm run dev`, en ga naar `/occasions` en `/admin`.

@@ -1,12 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { promises as fs } from "fs"
 import path from "path"
 import * as jwt from "jsonwebtoken"
+import { supabaseAdmin } from "@/lib/supabase"
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
 const ALLOWED_EXT = [".jpg", ".jpeg", ".png", ".webp", ".gif"]
+const STORAGE_BUCKET = "uploads"
 
 function isAllowedFile(file: File): boolean {
   if (ALLOWED_TYPES.includes(file.type)) return true
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const files = formData.getAll("files") as File[]
     const singleFile = formData.get("file") as File | null
-    const toProcess: File[] = singleFile ? [singleFile] : files.filter((f) => f && f.size > 0)
+    const toProcess: File[] = singleFile ? [singleFile] : files.filter((f) => f && typeof f.size === "number" && f.size > 0)
 
     if (toProcess.length === 0) {
       return NextResponse.json(
@@ -37,8 +38,6 @@ export async function POST(request: NextRequest) {
     const allowedFolders = ["cars", "onderdelen"]
     const folderParam = request.nextUrl.searchParams.get("folder") || "cars"
     const folder = allowedFolders.includes(folderParam) ? folderParam : "cars"
-    const uploadDir = path.join(process.cwd(), "public", "uploads", folder)
-    await fs.mkdir(uploadDir, { recursive: true })
 
     const urls: string[] = []
     for (const file of toProcess) {
@@ -56,10 +55,33 @@ export async function POST(request: NextRequest) {
       }
       const ext = path.extname(file.name) || ".jpg"
       const name = `${crypto.randomUUID()}${ext}`
-      const filePath = path.join(uploadDir, name)
+      const filePath = `${folder}/${name}`
       const buffer = Buffer.from(await file.arrayBuffer())
-      await fs.writeFile(filePath, buffer)
-      urls.push(`/uploads/${folder}/${name}`)
+      const contentType = file.type || "image/jpeg"
+
+      const { data, error } = await supabaseAdmin.storage
+        .from(STORAGE_BUCKET)
+        .upload(filePath, buffer, { contentType, upsert: false })
+
+      if (error) {
+        console.error("Supabase storage upload error:", error)
+        if (error.message?.includes("Bucket not found") || error.message?.includes("does not exist")) {
+          return NextResponse.json(
+            {
+              error:
+                "Storage-bucket ontbreekt. Maak in Supabase Dashboard → Storage een bucket 'uploads' aan (public) en probeer opnieuw.",
+            },
+            { status: 502 },
+          )
+        }
+        return NextResponse.json(
+          { error: error.message || "Upload mislukt" },
+          { status: 500 },
+        )
+      }
+
+      const { data: urlData } = supabaseAdmin.storage.from(STORAGE_BUCKET).getPublicUrl(data.path)
+      urls.push(urlData.publicUrl)
     }
 
     return NextResponse.json({ success: true, urls })
