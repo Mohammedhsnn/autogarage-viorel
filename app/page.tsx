@@ -12,53 +12,48 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Header currentPage="/" />
       
-      {/* Hero Section – lichtblauw, vloeiende overgang naar witte secties */}
-      <section className="relative min-h-screen flex items-center justify-center pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-24 bg-sky-50">
+      {/* Hero Section – gecentreerd, lichtblauw met zachte overgang */}
+      <section className="relative min-h-[85vh] sm:min-h-screen flex items-center justify-center pt-28 pb-20 sm:pt-32 sm:pb-24 lg:pt-40 lg:pb-28 bg-sky-50 overflow-hidden">
         {/* Background image – lage opacity, zachte blend */}
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1920&q=80"
             alt="Auto werkplaats"
-            className="w-full h-full object-cover opacity-[0.14]"
+            className="w-full h-full object-cover opacity-[0.12] scale-105"
           />
-          <div 
-            className="absolute inset-0 mix-blend-multiply bg-sky-100/75"
-            aria-hidden
-          />
-          {/* Zachte overgang van lichtblauw naar wit – match met rest van site */}
-          <div className="absolute inset-0 bg-gradient-to-b from-sky-50/60 via-transparent to-white" aria-hidden />
+          <div className="absolute inset-0 mix-blend-multiply bg-sky-100/80" aria-hidden />
+          <div className="absolute inset-0 bg-gradient-to-b from-sky-50/70 via-sky-50/30 to-white" aria-hidden />
         </div>
 
-        {/* Hero content */}
-        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw]">
-          <div className="max-w-2xl text-gray-900 min-w-0">
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-sky-800 border border-sky-200/60 px-4 py-2 rounded-full mb-6">
-              <Shield className="w-4 h-4" />
+        {/* Hero content – gecentreerd */}
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw] flex justify-center">
+          <div className="max-w-2xl w-full text-center">
+            <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm text-sky-800 border border-sky-200/60 px-4 py-2.5 rounded-full mb-6 shadow-sm">
+              <Shield className="w-4 h-4 flex-shrink-0" />
               <span className="text-sm font-medium">APK via RDW-erkende partner</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-balance text-gray-900">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight text-gray-900 text-balance drop-shadow-sm">
               Wij zijn uw auto specialist
             </h1>
-            <p className="text-lg sm:text-xl text-gray-700 mb-8 leading-relaxed max-w-xl">
-              Autogarage Viorel is uw betrouwbare partner voor onderhoud, reparaties, 
+            <p className="text-lg sm:text-xl text-gray-700 mb-10 leading-relaxed max-w-xl mx-auto">
+              Autogarage Viorel is uw betrouwbare partner voor onderhoud, reparaties,
               APK keuringen en kwaliteit occasions in Terneuzen en omgeving.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/occasions">
-                <Button size="lg" className="bg-sky-600 hover:bg-sky-700 text-white px-8 w-full sm:w-auto">
+                <Button size="lg" className="bg-sky-600 hover:bg-sky-700 text-white px-8 shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto">
                   Bekijk ons aanbod
                   <ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
               <Link href="/contact">
-                <Button size="lg" variant="outline" className="border-2 border-sky-700 text-sky-800 hover:bg-sky-600 hover:text-white bg-white/70 backdrop-blur-sm w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="border-2 border-sky-700 text-sky-800 hover:bg-sky-600 hover:text-white bg-white/90 backdrop-blur-sm shadow-sm w-full sm:w-auto">
                   Contact opnemen
                 </Button>
               </Link>
             </div>
           </div>
         </div>
-
       </section>
 
       {/* Stats Section – drie gelijke, symmetrische blokken */}
