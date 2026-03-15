@@ -142,19 +142,19 @@ export default function AfspraakPage() {
       <Header currentPage="/afspraak" />
 
       <section className="pt-28 sm:pt-32 pb-10 sm:pb-12 lg:pt-40 lg:pb-16 bg-gray-900 text-white overflow-hidden">
-        <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
-          <div className="max-w-3xl min-w-0">
-            <p className="inline-flex items-center gap-2 text-sm font-medium px-4 py-1.5 rounded-full bg-white/10 mb-4">
+        <div className="container mx-auto px-4 sm:px-6 max-w-[100vw] flex justify-center">
+          <div className="max-w-3xl w-full text-center min-w-0">
+            <p className="inline-flex items-center justify-center gap-2 text-sm font-medium px-4 py-1.5 rounded-full bg-white/10 mb-4">
               <Calendar className="w-4 h-4 flex-shrink-0" />
               Plan direct uw afspraak
             </p>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4">
               Online afspraak maken
             </h1>
-            <p className="text-base sm:text-lg text-gray-200 mb-6">
+            <p className="text-base sm:text-lg text-gray-200 mb-6 max-w-xl mx-auto">
               Kies een datum en tijd, vul uw gegevens in en bevestig. Uw afspraak staat direct in onze agenda.
             </p>
-            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 text-sm text-gray-200">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 text-sm text-gray-200 justify-center items-center">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 flex-shrink-0" />
                 <span>Ma–Za: 09:00–17:00, Zo: gesloten</span>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Package, Search, Phone, Loader2, AlertCircle, Fuel, Gauge, ChevronRight } from "lucide-react"
+import { Package, Search, Phone, Loader2, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -17,28 +17,6 @@ import Link from "next/link"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import FloatingActions from "@/components/FloatingActions"
-
-interface CarImage {
-  id: number
-  car_id: number
-  image_url: string
-  is_primary: boolean
-  sort_order: number
-}
-
-interface Voertuig {
-  id: number
-  brand: string
-  model: string
-  year: number
-  price: number
-  mileage: number
-  fuel: string
-  transmission: string
-  status: string
-  created_at: string
-  images?: CarImage[]
-}
 
 const MERKEN = [
   "Abarth", "Alfa Romeo", "Audi", "BMW", "Citroën", "Dacia", "Fiat", "Ford",
@@ -64,6 +42,7 @@ interface Onderdeel {
   category: string
   price: number | null
   image_url: string | null
+  created_at?: string
 }
 
 export default function OnderdelenPage() {
@@ -83,43 +62,38 @@ export default function OnderdelenPage() {
   const [autosoort, setAutosoort] = useState<string | null>(null)
   const [kentekenLookupLoading, setKentekenLookupLoading] = useState(false)
 
-  const [voertuigen, setVoertuigen] = useState<Voertuig[]>([])
-  const [voertuigenLoading, setVoertuigenLoading] = useState(true)
-  const [filterVoertuigMerk, setFilterVoertuigMerk] = useState("all")
-  const [filterVoertuigFuel, setFilterVoertuigFuel] = useState("all")
-  const [sortVoertuigen, setSortVoertuigen] = useState("created_at")
+  const [aanbodOnderdelen, setAanbodOnderdelen] = useState<Onderdeel[]>([])
+  const [aanbodLoading, setAanbodLoading] = useState(true)
+  const [filterAanbodCategory, setFilterAanbodCategory] = useState("all")
+  const [sortAanbod, setSortAanbod] = useState("created_at")
 
   useEffect(() => {
-    const loadVoertuigen = async () => {
+    const loadAanbod = async () => {
       try {
-        setVoertuigenLoading(true)
-        const res = await fetch("/api/cars?status=available")
+        setAanbodLoading(true)
+        const res = await fetch("/api/onderdelen")
         const data = await res.json()
-        if (data.success && Array.isArray(data.cars)) setVoertuigen(data.cars)
-        else setVoertuigen([])
+        if (data.success && Array.isArray(data.onderdelen)) setAanbodOnderdelen(data.onderdelen)
+        else setAanbodOnderdelen([])
       } catch {
-        setVoertuigen([])
+        setAanbodOnderdelen([])
       } finally {
-        setVoertuigenLoading(false)
+        setAanbodLoading(false)
       }
     }
-    loadVoertuigen()
+    loadAanbod()
   }, [])
 
-  const filteredVoertuigen = (() => {
-    let list = [...voertuigen]
-    if (filterVoertuigMerk !== "all") list = list.filter((v) => v.brand === filterVoertuigMerk)
-    if (filterVoertuigFuel !== "all") list = list.filter((v) => v.fuel === filterVoertuigFuel)
-    if (sortVoertuigen === "price-asc") list.sort((a, b) => a.price - b.price)
-    else if (sortVoertuigen === "price-desc") list.sort((a, b) => b.price - a.price)
-    else if (sortVoertuigen === "year-desc") list.sort((a, b) => b.year - a.year)
-    else if (sortVoertuigen === "mileage-asc") list.sort((a, b) => a.mileage - b.mileage)
-    else list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const filteredAanbod = (() => {
+    let list = [...aanbodOnderdelen]
+    if (filterAanbodCategory !== "all") list = list.filter((o) => o.category === filterAanbodCategory)
+    if (sortAanbod === "price-asc") list.sort((a, b) => (a.price ?? 0) - (b.price ?? 0))
+    else if (sortAanbod === "price-desc") list.sort((a, b) => (b.price ?? 0) - (a.price ?? 0))
+    else list.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
     return list
   })()
 
-  const voertuigMerken = Array.from(new Set(voertuigen.map((v) => v.brand))).sort()
-  const voertuigBrandstoffen = Array.from(new Set(voertuigen.map((v) => v.fuel))).sort()
+  const aanbodCategories = Array.from(new Set(aanbodOnderdelen.map((o) => o.category).filter(Boolean))).sort()
 
   const hasSearch = () =>
     [kenteken, merk, artikelnummer, motorcode, versnellingsbakcode, chassisnummer, kbaNummer, category, vrijeTekst].some(
@@ -201,8 +175,8 @@ export default function OnderdelenPage() {
             className="w-full h-full object-cover opacity-30"
           />
         </div>
-        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw]">
-          <div className="max-w-3xl min-w-0">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw] flex justify-center">
+          <div className="max-w-3xl w-full text-center min-w-0">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full mb-4 sm:mb-6">
               <Package className="w-4 h-4 flex-shrink-0" />
               <span className="text-sm font-medium">Zoeken naar onderdelen</span>
@@ -210,7 +184,7 @@ export default function OnderdelenPage() {
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
               Onderdelen voorraad
             </h1>
-            <p className="text-base sm:text-lg text-gray-300">
+            <p className="text-base sm:text-lg text-gray-300 max-w-xl mx-auto">
               Zoek op kenteken, merk, artikelnummer, motorcode of andere gegevens. Geen resultaat? Bel ons voor een aanvraag.
             </p>
           </div>
@@ -470,39 +444,27 @@ export default function OnderdelenPage() {
               <p className="text-sm text-gray-600 mb-4">
                 Bekijk ons aanbod. Zoek hierboven naar onderdelen op kenteken of artikelnummer, of bel ons voor een aanvraag.
               </p>
-              {!voertuigenLoading && (
+              {!aanbodLoading && (
                 <>
-                  <div className="space-y-2 mb-4">
-                    <Label className="text-xs font-medium text-gray-500">Merk</Label>
-                    <Select value={filterVoertuigMerk} onValueChange={setFilterVoertuigMerk}>
-                      <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Alle merken" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Alle merken</SelectItem>
-                        {voertuigMerken.map((m) => (
-                          <SelectItem key={m} value={m}>{m}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2 mb-4">
-                    <Label className="text-xs font-medium text-gray-500">Brandstof</Label>
-                    <Select value={filterVoertuigFuel} onValueChange={setFilterVoertuigFuel}>
-                      <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Alle" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Alle</SelectItem>
-                        {voertuigBrandstoffen.map((f) => (
-                          <SelectItem key={f} value={f}>{f}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {aanbodCategories.length > 0 && (
+                    <div className="space-y-2 mb-4">
+                      <Label className="text-xs font-medium text-gray-500">Categorie</Label>
+                      <Select value={filterAanbodCategory} onValueChange={setFilterAanbodCategory}>
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Alle categorieën" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Alle categorieën</SelectItem>
+                          {aanbodCategories.map((c) => (
+                            <SelectItem key={c} value={c}>{c}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                   <div className="space-y-2">
                     <Label className="text-xs font-medium text-gray-500">Sorteer op</Label>
-                    <Select value={sortVoertuigen} onValueChange={setSortVoertuigen}>
+                    <Select value={sortAanbod} onValueChange={setSortAanbod}>
                       <SelectTrigger className="bg-white">
                         <SelectValue />
                       </SelectTrigger>
@@ -510,8 +472,6 @@ export default function OnderdelenPage() {
                         <SelectItem value="created_at">Nieuwste eerst</SelectItem>
                         <SelectItem value="price-asc">Prijs laag-hoog</SelectItem>
                         <SelectItem value="price-desc">Prijs hoog-laag</SelectItem>
-                        <SelectItem value="year-desc">Bouwjaar nieuwste</SelectItem>
-                        <SelectItem value="mileage-asc">Km stand laag-hoog</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -519,79 +479,73 @@ export default function OnderdelenPage() {
               )}
             </aside>
 
-            {/* Grid */}
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <p className="text-gray-600">
-                  {voertuigenLoading ? (
+                  {aanbodLoading ? (
                     "Laden..."
                   ) : (
-                    <span className="font-medium text-gray-900">{filteredVoertuigen.length}</span>
+                    <span className="font-medium text-gray-900">{filteredAanbod.length}</span>
                   )}{" "}
-                  {!voertuigenLoading && "onderdelen"}
+                  {!aanbodLoading && "onderdelen"}
                 </p>
-                {!voertuigenLoading && (filterVoertuigMerk !== "all" || filterVoertuigFuel !== "all") && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setFilterVoertuigMerk("all")
-                      setFilterVoertuigFuel("all")
-                    }}
-                  >
-                    Filters wissen
+                {!aanbodLoading && filterAanbodCategory !== "all" && (
+                  <Button variant="ghost" size="sm" onClick={() => setFilterAanbodCategory("all")}>
+                    Filter wissen
                   </Button>
                 )}
               </div>
 
-              {voertuigenLoading ? (
+              {aanbodLoading ? (
                 <div className="flex items-center justify-center py-20">
                   <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
                 </div>
-              ) : filteredVoertuigen.length === 0 ? (
+              ) : filteredAanbod.length === 0 ? (
                 <Card>
                   <CardContent className="p-12 text-center">
                     <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Geen onderdelen gevonden met de gekozen filters.</p>
+                    <p className="text-gray-600">
+                      {aanbodOnderdelen.length === 0
+                        ? "Nog geen onderdelen in het aanbod. In de admin kunt u onderdelen toevoegen."
+                        : "Geen onderdelen in deze categorie."}
+                    </p>
                   </CardContent>
                 </Card>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredVoertuigen.map((v) => (
-                    <Card key={v.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                      <Link href="/occasions" className="block">
-                        <div className="aspect-[4/3] bg-gray-200 relative">
-                          <img
-                            src={v.images?.[0]?.image_url || "/placeholder.svg"}
-                            alt={`${v.brand} ${v.model}`}
-                            className="w-full h-full object-cover"
-                          />
-                          <span className="absolute top-2 left-2 px-2 py-1 rounded bg-green-600 text-white text-xs font-medium">
-                            Beschikbaar
+                  {filteredAanbod.map((o) => (
+                    <Card key={o.id} className="overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+                      <div className="aspect-[4/3] bg-gray-200 relative flex-shrink-0">
+                        <img
+                          src={o.image_url || "/placeholder.svg"}
+                          alt={o.name}
+                          className="w-full h-full object-cover"
+                        />
+                        {o.category && (
+                          <span className="absolute top-2 left-2 px-2 py-1 rounded bg-sky-600 text-white text-xs font-medium">
+                            {o.category}
                           </span>
-                        </div>
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold text-gray-900 truncate">
-                            {v.brand} {v.model}
-                          </h3>
-                          <p className="text-sm text-gray-500 mb-2">{v.year}</p>
-                          <div className="flex flex-wrap gap-3 text-sm text-gray-600">
-                            <span className="flex items-center gap-1">
-                              <Fuel className="w-4 h-4" />
-                              {v.fuel}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Gauge className="w-4 h-4" />
-                              {v.mileage.toLocaleString()} km
-                            </span>
-                          </div>
-                          <p className="mt-2 font-semibold text-gray-900">€ {v.price.toLocaleString()}</p>
-                          <span className="inline-flex items-center gap-1 mt-2 text-sm text-blue-600 font-medium">
-                            Bekijk occasion
-                            <ChevronRight className="w-4 h-4" />
-                          </span>
-                        </CardContent>
-                      </Link>
+                        )}
+                      </div>
+                      <CardContent className="p-4 flex flex-col flex-1">
+                        <h3 className="font-semibold text-gray-900">{o.name}</h3>
+                        {o.merk && <p className="text-sm text-gray-500">Merk: {o.merk}</p>}
+                        {o.artikelnummer && (
+                          <p className="text-sm text-gray-500">Art.nr. {o.artikelnummer}</p>
+                        )}
+                        {o.description && (
+                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{o.description}</p>
+                        )}
+                        {o.price != null && (
+                          <p className="mt-2 font-semibold text-gray-900">€ {o.price.toLocaleString()}</p>
+                        )}
+                        <a href="tel:+31618809802" className="mt-3 inline-flex">
+                          <Button variant="outline" size="sm" className="border-blue-600 text-blue-600 w-full sm:w-auto">
+                            <Phone className="w-4 h-4 mr-1" />
+                            Vraag aan
+                          </Button>
+                        </a>
+                      </CardContent>
                     </Card>
                   ))}
                 </div>

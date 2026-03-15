@@ -4,8 +4,9 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Plus, Package, Loader2 } from "lucide-react"
+import { ArrowLeft, Plus, Package, Loader2, Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
+import { useToast } from "@/hooks/use-toast"
 
 interface Onderdeel {
   id: number
@@ -25,7 +26,9 @@ export default function AdminOnderdelenPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [onderdelen, setOnderdelen] = useState<Onderdeel[]>([])
   const [loading, setLoading] = useState(true)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
   const router = useRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("admin-logged-in")
@@ -51,6 +54,25 @@ export default function AdminOnderdelenPage() {
       setOnderdelen([])
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDelete = async (o: Onderdeel) => {
+    if (!confirm(`Weet u zeker dat u "${o.name}" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`)) return
+    setDeletingId(o.id)
+    try {
+      const res = await fetch(`/api/onderdelen/${o.id}`, { method: "DELETE", credentials: "include" })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        toast({ title: "Verwijderd", description: o.name + " is verwijderd." })
+        setOnderdelen((prev) => prev.filter((x) => x.id !== o.id))
+      } else {
+        toast({ title: "Fout", description: data.error || "Kon niet verwijderen", variant: "destructive" })
+      }
+    } catch {
+      toast({ title: "Fout", description: "Netwerkfout", variant: "destructive" })
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -125,6 +147,7 @@ export default function AdminOnderdelenPage() {
                       <th className="py-3 px-4">Categorie</th>
                       <th className="py-3 px-4">Prijs</th>
                       <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4">Acties</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -155,6 +178,30 @@ export default function AdminOnderdelenPage() {
                           >
                             {o.is_active ? "Actief" : "Inactief"}
                           </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-2">
+                            <Link href={`/admin/onderdelen/${o.id}/edit`}>
+                              <Button variant="outline" size="sm" className="gap-1">
+                                <Pencil className="w-3.5 h-3.5" />
+                                Bewerken
+                              </Button>
+                            </Link>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 border-red-200 hover:bg-red-50 gap-1"
+                              disabled={deletingId === o.id}
+                              onClick={() => handleDelete(o)}
+                            >
+                              {deletingId === o.id ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              ) : (
+                                <Trash2 className="w-3.5 h-3.5" />
+                              )}
+                              Verwijderen
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}

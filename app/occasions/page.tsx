@@ -135,18 +135,18 @@ export default function OccasionsPage() {
             className="w-full h-full object-cover opacity-30"
           />
         </div>
-        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw]">
-          <div className="max-w-3xl min-w-0">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw] flex justify-center">
+          <div className="max-w-3xl w-full text-center min-w-0">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full mb-6">
               <CheckCircle className="w-4 h-4" />
               <span className="text-sm font-medium">Alle auto's met garantie</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 text-balance">Ons aanbod</h1>
-            <p className="text-lg sm:text-xl text-gray-300 mb-8 max-w-xl">
-              Ontdek ons uitgebreide aanbod van kwaliteit occasions. Alle auto's zijn 
+            <p className="text-lg sm:text-xl text-gray-300 mb-8 max-w-xl mx-auto">
+              Ontdek ons uitgebreide aanbod van kwaliteit occasions. Alle auto's zijn
               grondig gecontroleerd en komen met garantie.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a href="tel:+31618809802">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
                   <Phone className="w-5 h-5 mr-2" />

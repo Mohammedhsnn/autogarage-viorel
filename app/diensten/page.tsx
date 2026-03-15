@@ -169,8 +169,8 @@ export default function DienstenPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-gray-900/70 to-gray-900" />
         </div>
-        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw]">
-          <div className="max-w-3xl min-w-0 animate-slide-up">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw] flex justify-center">
+          <div className="max-w-3xl w-full text-center min-w-0 animate-slide-up">
             <div className="inline-flex items-center gap-2 bg-sky-500/20 backdrop-blur-sm text-white px-4 py-2 rounded-full mb-6">
               <Settings className="w-4 h-4" />
               <span className="text-sm font-medium">{HERO.badge}</span>
@@ -178,10 +178,10 @@ export default function DienstenPage() {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 text-balance leading-tight">
               {HERO.title}
             </h1>
-            <p className="text-lg sm:text-xl text-gray-300 mb-10 leading-relaxed max-w-xl">
+            <p className="text-lg sm:text-xl text-gray-300 mb-10 leading-relaxed max-w-xl mx-auto">
               {HERO.subtitle}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a href="tel:+31618809802">
                 <Button size="lg" className="bg-sky-500 hover:bg-sky-600 text-white w-full sm:w-auto shadow-lg transition-all duration-300 hover:scale-[1.02]">
                   <Phone className="w-5 h-5 mr-2" />

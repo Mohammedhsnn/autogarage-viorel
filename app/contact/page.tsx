@@ -22,8 +22,8 @@ export default function ContactPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-gray-900/60 to-gray-900" />
         </div>
-        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw]">
-          <div className="max-w-2xl min-w-0">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw] flex justify-center">
+          <div className="max-w-2xl w-full text-center min-w-0">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full mb-4 sm:mb-6">
               <MessageCircle className="w-4 h-4 flex-shrink-0" />
               <span className="text-sm font-medium">Wij staan voor u klaar</span>
@@ -31,8 +31,8 @@ export default function ContactPage() {
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
               Contact
             </h1>
-            <p className="text-base sm:text-lg text-gray-300">
-              Heeft u vragen, wilt u een afspraak maken of meer weten over onze diensten? 
+            <p className="text-base sm:text-lg text-gray-300 max-w-xl mx-auto">
+              Heeft u vragen, wilt u een afspraak maken of meer weten over onze diensten?
               Neem gerust contact op – per telefoon, e-mail of via het formulier.
             </p>
           </div>

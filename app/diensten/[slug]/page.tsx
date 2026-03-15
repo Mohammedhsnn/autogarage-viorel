@@ -39,7 +39,7 @@ export default async function DienstenSlugPage({ params }: Props) {
 
       {/* Hero – lichtblauwe sectie bij elke diensten-subpagina */}
       <section className="pt-36 pb-14 lg:pt-40 lg:pb-20 bg-sky-100">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 flex flex-col items-center">
           <nav className="flex items-center gap-2 text-sm text-sky-700 mb-6">
             <Link href="/" className="hover:text-sky-900 transition-colors">
               Home
@@ -51,7 +51,7 @@ export default async function DienstenSlugPage({ params }: Props) {
             <span>/</span>
             <span className="text-sky-900 font-medium">{content.title}</span>
           </nav>
-          <div className="max-w-3xl">
+          <div className="max-w-3xl w-full text-center">
             <div className="inline-flex items-center gap-2 bg-sky-200/80 text-sky-900 px-4 py-2 rounded-full mb-6">
               <Wrench className="w-4 h-4" />
               <span className="text-sm font-medium">Dienst</span>
@@ -59,7 +59,7 @@ export default async function DienstenSlugPage({ params }: Props) {
             <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4 text-balance leading-tight">
               {content.title}
             </h1>
-            <p className="text-xl text-gray-700 leading-relaxed">
+            <p className="text-xl text-gray-700 leading-relaxed max-w-xl mx-auto">
               {content.subtitle}
             </p>
           </div>
