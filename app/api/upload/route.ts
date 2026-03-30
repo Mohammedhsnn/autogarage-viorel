@@ -35,7 +35,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const allowedFolders = ["cars", "onderdelen"]
+    // Folder voor Supabase Storage objecten (public bucket: uploads)
+    // - `cars` en `onderdelen` bestonden al
+    // - `homepage` gebruiken we voor hero/foto's uit de CMS editor
+    const allowedFolders = ["cars", "onderdelen", "homepage"]
     const folderParam = request.nextUrl.searchParams.get("folder") || "cars"
     const folder = allowedFolders.includes(folderParam) ? folderParam : "cars"
 

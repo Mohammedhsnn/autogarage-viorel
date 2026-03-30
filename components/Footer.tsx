@@ -49,6 +49,7 @@ export default function Footer() {
               Uw betrouwbare partner voor autoonderhoud, reparaties, APK keuringen (via 
               RDW-erkende partner) en kwaliteit occasions in Terneuzen en omgeving.
             </p>
+
             <div className="flex gap-3">
               <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors" aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
@@ -156,7 +157,7 @@ export default function Footer() {
               © {new Date().getFullYear()} Autogarage Viorel. Alle rechten voorbehouden.
             </p>
             <p className="text-gray-500 text-xs sm:text-sm order-1 md:order-2 md:flex-1 md:flex md:justify-center md:items-baseline">
-              Gemaakt door{" "}
+              Gerealiseerd door{" "}
               <a
                 href="https://articxsoftware.nl"
                 target="_blank"

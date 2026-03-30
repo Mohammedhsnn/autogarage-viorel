@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Car, Plus, Settings, Users, BarChart3, LogOut, Edit, Trash2, Database, AlertTriangle, Wrench, Package, Calendar, Eye } from "lucide-react"
+import { Car, Plus, Settings, Users, BarChart3, LogOut, Edit, Trash2, Database, AlertTriangle, Wrench, Package, Calendar, Eye, ImagePlus } from "lucide-react"
 import Link from "next/link"
 import { getStats, getCars, deleteCar } from "@/app/actions"
 
@@ -257,6 +257,18 @@ export default function AdminDashboard() {
                   <Button variant="outline">
                     <Eye className="w-4 h-4 mr-2" />
                     Analytics
+                  </Button>
+                </Link>
+                <Link href="/admin/homepage">
+                  <Button variant="outline">
+                    <ImagePlus className="w-4 h-4 mr-2" />
+                    Homepage CMS (foto's)
+                  </Button>
+                </Link>
+                <Link href="/admin/diensten-subpages-cms">
+                  <Button variant="outline">
+                    <Wrench className="w-4 h-4 mr-2" />
+                    Diensten subpagina CMS
                   </Button>
                 </Link>
                 <Button onClick={loadData} variant="outline">

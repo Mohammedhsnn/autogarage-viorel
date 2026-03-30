@@ -17,6 +17,8 @@ import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import FloatingActions from "@/components/FloatingActions"
 import Link from "next/link"
+import { getPageContent } from "@/app/actions"
+import { mergeDienstenContent } from "@/lib/diensten-content"
 
 const iconMap: Record<string, LucideIcon> = {
   Wrench,
@@ -34,127 +36,21 @@ const textColor = "text-sky-600"
 const badgeBg = "bg-sky-100 text-sky-700"
 const buttonBg = "bg-sky-500 hover:bg-sky-600"
 
-/* ----- Statische content (geen database) ----- */
+export const dynamic = "force-dynamic"
 
-const HERO = {
-  badge: "Professionele autoservice",
-  title: "Onze Diensten",
-  subtitle:
-    "Van preventief onderhoud tot complexe reparaties – bij Autogarage Viorel bent u verzekerd van vakkundig werk, eerlijke prijzen en persoonlijke service in Terneuzen.",
-  cta_primary: "Bel voor advies",
-  cta_secondary: "Plan een afspraak",
-}
+export default async function DienstenPage() {
+  const pageContent = await getPageContent("diensten")
+  const cms = mergeDienstenContent(pageContent)
 
-const MAIN_SECTION = {
-  title: "Onze Hoofddiensten",
-  subtitle:
-    "Wij bieden een compleet pakket aan autoservices, van dagelijks onderhoud tot specialistische reparaties. Alle merken welkom.",
-}
+  const HERO = cms.hero
+  const MAIN_SECTION = cms.main_section
+  const ADDITIONAL_SECTION = cms.additional_section
+  const HOW_WE_WORK = cms.how_we_work
+  const PRICING_SECTION = cms.pricing_section
+  const MAIN_SERVICES = cms.main_services
+  const ADDITIONAL_SERVICES = cms.additional_services
+  const PRICING_CARDS = cms.pricing_cards
 
-const ADDITIONAL_SECTION = {
-  title: "Aanvullende Services",
-  subtitle: "Naast onze hoofddiensten bieden wij ook gespecialiseerde services voor uw auto.",
-}
-
-const HOW_WE_WORK = {
-  title: "Hoe wij werken",
-  subtitle: "Ons werkproces is transparant, efficiënt en altijd gericht op uw tevredenheid.",
-  steps: [
-    {
-      number: 1,
-      title: "Afspraak maken",
-      description: "Bel ons op +31 (6)18 80 98 02 of kom langs op Ambachtsstraat 1-A op een moment dat u uitkomt.",
-    },
-    {
-      number: 2,
-      title: "Diagnose & Offerte",
-      description: "Wij onderzoeken uw auto en geven een duidelijke, transparante offerte. Geen verrassingen achteraf.",
-    },
-    {
-      number: 3,
-      title: "Vakkundig werk",
-      description: "Na uw goedkeuring voeren wij het werk vakkundig en zorgvuldig uit met kwaliteitsonderdelen.",
-    },
-    {
-      number: 4,
-      title: "Oplevering",
-      description: "Uw auto wordt opgeleverd met garantie en uitleg over het uitgevoerde werk.",
-    },
-  ],
-}
-
-const PRICING_SECTION = {
-  title: "Transparante Prijzen",
-  subtitle: "Geen verrassingen achteraf. Onze prijzen zijn helder en eerlijk. Vraag gerust een offerte aan.",
-}
-
-const MAIN_SERVICES = [
-  {
-    id: "apk",
-    name: "APK Keuring",
-    description:
-      "Bij Autogarage Viorel kunt u terecht voor uw periodieke APK-keuring. Wij werken samen met een RDW-erkend keuringsstation en regelen de keuring voor u vakkundig en transparant.",
-    icon_name: "Shield",
-    features: [
-      "Samenwerking met RDW-erkend keuringsstation",
-      "Snelle afhandeling, vaak dezelfde dag nog mogelijk",
-      "Transparante prijzen",
-      "Uitleg bij eventuele gebreken en advies voor reparatie",
-    ],
-    price_label: "Vanaf € 45",
-    button_text: "APK laten keuren",
-    slug: "apk-service",
-  },
-  {
-    id: "onderhoudsbeurt",
-    name: "Onderhoudsbeurt",
-    description:
-      "Regelmatig onderhoud verlengt de levensduur van uw auto. Wij voeren kleine en grote beurten uit volgens het onderhoudsschema van de fabrikant. Alle merken welkom.",
-    icon_name: "Settings",
-    features: [
-      "Kleine en grote onderhoudsbeurten",
-      "Volgens fabrikant-specificaties",
-      "Olie- en filtervervanging inbegrepen",
-      "Controle van remmen, banden en vloeistoffen",
-    ],
-    price_label: "Prijs op aanvraag",
-    button_text: "Afspraak maken",
-    slug: "onderhoudsbeurt",
-  },
-  {
-    id: "onderhoud-herstel",
-    name: "Onderhoud & Herstel",
-    description:
-      "Van kleine reparaties tot grotere herstelwerkzaamheden: wij pakken het vakkundig aan. Eerlijke prijzen en duidelijke communicatie.",
-    icon_name: "Wrench",
-    features: [
-      "Algemene reparaties en herstel",
-      "Remmen, ophanging en uitlaat",
-      "Elektrische en elektronische storingen",
-      "Transparante offerte vooraf",
-    ],
-    button_text: "Meer informatie",
-    slug: "onderhoud-herstel",
-  },
-]
-
-const ADDITIONAL_SERVICES = [
-  { id: "olie", name: "Olie verversen", description: "Olie- en oliefiltervervanging met de juiste specificaties voor uw motor. Snel gedaan.", icon_name: "Settings", price_label: "Op aanvraag", slug: "olie-verversen" },
-  { id: "filters", name: "Filters & Accu's", description: "Vervanging van lucht-, olie- en interieurfilters en accu's. Ook start-stop en hybride.", icon_name: "Battery", price_label: "Op aanvraag", slug: "filters-accus" },
-  { id: "trekhaak", name: "Trekhaak Montage", description: "Montage trekhaak op maat inclusief stroomaansluiting. Voor aanhanger, fietsendrager of caravan.", icon_name: "Car", price_label: "Op aanvraag", slug: "trekhaak-montage" },
-  { id: "schokdempers", name: "Schokdempers & Uitlaten", description: "Vervanging en reparatie van schokdempers, veren en uitlaatsystemen.", icon_name: "Wrench", price_label: "Op aanvraag", slug: "schokdempers-uitlaten" },
-  { id: "laswerk", name: "Laswerk", description: "Carrosserie herstellen met professioneel laswerk. Van kleine reparaties tot uitlaat en plaatwerk.", icon_name: "Wrench", price_label: "Op aanvraag", slug: "laswerk" },
-  { id: "import-export", name: "Import & Export", description: "Hulp bij documenten, keuringen en administratie voor in- en uitvoer van voertuigen.", icon_name: "Car", price_label: "Op aanvraag", slug: "import-export" },
-  { id: "kentekenplaten", name: "Kentekenplaten", description: "Nieuwe kentekenplaten op maat. Europlaat of reflecterend, vaak direct meeneem.", icon_name: "Settings", price_label: "Scherpe prijzen", slug: "kentekenplaten" },
-]
-
-const PRICING_CARDS = [
-  { id: "apk", name: "APK Keuring", price_label: "Vanaf € 45", badge_text: "Populair", features: ["Via RDW-erkende partner", "Snelle afhandeling", "Duidelijke rapportage"], button_text: "Afspraak maken", slug: "apk-service" },
-  { id: "onderhoud", name: "Onderhoudsbeurt", price_label: "Op aanvraag", features: ["Kleine en grote beurt", "Volgens fabrikant", "Incl. olie en filters"], button_text: "Offerte aanvragen", slug: "onderhoudsbeurt" },
-  { id: "olie", name: "Olie verversen", price_label: "Op aanvraag", features: ["Olie + oliefilter", "Juiste specificaties", "Korte doorlooptijd"], button_text: "Bel voor afspraak", slug: "olie-verversen" },
-]
-
-export default function DienstenPage() {
   return (
     <div className="min-h-screen bg-white">
       <Header currentPage="/diensten" />

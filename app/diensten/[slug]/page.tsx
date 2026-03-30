@@ -11,8 +11,11 @@ import {
   getSlugForLabel,
   DIENSTEN_DROPDOWN_LABELS,
 } from "@/lib/diensten-paginas"
+import { getPageContent } from "@/app/actions"
 
 type Props = { params: Promise<{ slug: string }> }
+
+export const dynamic = "force-dynamic"
 
 export async function generateStaticParams() {
   return DIENSTEN_SLUGS.map((slug) => ({ slug }))
@@ -20,8 +23,23 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  const content = getDienstenPaginaContent(slug)
-  if (!content) return { title: "Dienst niet gevonden" }
+  const defaults = getDienstenPaginaContent(slug)
+  if (!defaults) return { title: "Dienst niet gevonden" }
+
+  const pageContent = await getPageContent(`diensten:${slug}`)
+  const cms = (pageContent ?? {}) as any
+
+  const content = {
+    ...defaults,
+    title: typeof cms?.title === "string" && cms.title.trim().length > 0 ? cms.title : defaults.title,
+    subtitle: typeof cms?.subtitle === "string" && cms.subtitle.trim().length > 0 ? cms.subtitle : defaults.subtitle,
+    intro: typeof cms?.intro === "string" && cms.intro.trim().length > 0 ? cms.intro : defaults.intro,
+    features: Array.isArray(cms?.features) ? (cms.features.filter((f: any) => typeof f === "string" && f.trim().length > 0) as string[]) : defaults.features,
+    ctaTitle: typeof cms?.ctaTitle === "string" && cms.ctaTitle.trim().length > 0 ? cms.ctaTitle : defaults.ctaTitle,
+    ctaSubtitle:
+      typeof cms?.ctaSubtitle === "string" && cms.ctaSubtitle.trim().length > 0 ? cms.ctaSubtitle : defaults.ctaSubtitle,
+  }
+
   return {
     title: `${content.title} | Autogarage Viorel`,
     description: content.subtitle,
@@ -30,8 +48,22 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function DienstenSlugPage({ params }: Props) {
   const { slug } = await params
-  const content = getDienstenPaginaContent(slug)
-  if (!content) notFound()
+  const defaults = getDienstenPaginaContent(slug)
+  if (!defaults) notFound()
+
+  const pageContent = await getPageContent(`diensten:${slug}`)
+  const cms = (pageContent ?? {}) as any
+
+  const content = {
+    ...defaults,
+    title: typeof cms?.title === "string" && cms.title.trim().length > 0 ? cms.title : defaults.title,
+    subtitle: typeof cms?.subtitle === "string" && cms.subtitle.trim().length > 0 ? cms.subtitle : defaults.subtitle,
+    intro: typeof cms?.intro === "string" && cms.intro.trim().length > 0 ? cms.intro : defaults.intro,
+    features: Array.isArray(cms?.features) ? (cms.features.filter((f: any) => typeof f === "string" && f.trim().length > 0) as string[]) : defaults.features,
+    ctaTitle: typeof cms?.ctaTitle === "string" && cms.ctaTitle.trim().length > 0 ? cms.ctaTitle : defaults.ctaTitle,
+    ctaSubtitle:
+      typeof cms?.ctaSubtitle === "string" && cms.ctaSubtitle.trim().length > 0 ? cms.ctaSubtitle : defaults.ctaSubtitle,
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -82,6 +114,19 @@ export default async function DienstenSlugPage({ params }: Props) {
                 </li>
               ))}
             </ul>
+
+            {/* CTA */}
+            <div className="mt-10 p-6 rounded-2xl bg-sky-50 border border-sky-200">
+              <h3 className="text-xl font-bold text-gray-900">{content.ctaTitle}</h3>
+              <p className="text-gray-600 mt-2 leading-relaxed">{content.ctaSubtitle}</p>
+              <div className="mt-5">
+                <Link href="/afspraak">
+                  <Button className="bg-sky-500 hover:bg-sky-600 text-white">
+                    Afspraak maken
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

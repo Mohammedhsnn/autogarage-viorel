@@ -1,13 +1,52 @@
 import Link from "next/link"
-import { Phone, MapPin, Clock, Car, Shield, CheckCircle, Wrench, ChevronRight, Star, Users, Award } from "lucide-react"
+import { Phone, MapPin, Clock, Car, Shield, CheckCircle, Wrench, ChevronRight, Users, Award } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import FloatingActions from "@/components/FloatingActions"
+import { getCars, getPageContent } from "@/app/actions"
+import HeroPhotoSlider from "@/components/HeroPhotoSlider"
 
-export default function HomePage() {
+// Zorg dat de homepage dynamisch blijft zodat CMS-wijzigingen (Supabase page_content) direct zichtbaar zijn.
+export const dynamic = "force-dynamic"
+
+export default async function HomePage() {
+  const pageContent = await getPageContent("home")
+  const hero = (pageContent as any)?.hero ?? {}
+
+  const DEFAULT_BACKGROUND_IMAGE_URL = "/over-autogarage-viorel.png"
+  const DEFAULT_COLLAGE_WIDE_IMAGE_URL = "/over-autogarage-viorel.png"
+  const DEFAULT_COLLAGE_SQUARE_1_IMAGE_URL = "/uploads/cars/0a1fec5b-b1fb-41ca-9ea7-22b11700b4dc.webp"
+  const DEFAULT_COLLAGE_SQUARE_2_IMAGE_URL = "/uploads/cars/226d9937-c230-4657-94a8-ecb2a83f6925.webp"
+
+  const backgroundImageUrl =
+    typeof hero.background_image_url === "string" && hero.background_image_url.trim().length > 0
+      ? hero.background_image_url
+      : DEFAULT_BACKGROUND_IMAGE_URL
+
+  const collageWideImageUrl =
+    typeof hero.collage_wide_image_url === "string" && hero.collage_wide_image_url.trim().length > 0
+      ? hero.collage_wide_image_url
+      : DEFAULT_COLLAGE_WIDE_IMAGE_URL
+
+  const squareUrls: unknown[] = Array.isArray(hero.collage_square_image_urls) ? hero.collage_square_image_urls : []
+  const collageSquare1ImageUrl =
+    typeof squareUrls?.[0] === "string" && squareUrls[0].trim().length > 0 ? squareUrls[0] : DEFAULT_COLLAGE_SQUARE_1_IMAGE_URL
+  const collageSquare2ImageUrl =
+    typeof squareUrls?.[1] === "string" && squareUrls[1].trim().length > 0 ? squareUrls[1] : DEFAULT_COLLAGE_SQUARE_2_IMAGE_URL
+
+  // Mini occasions sectie: toon willekeurig 2-3 auto's uit de database
+  let featuredCars: Array<any> = []
+  try {
+    const cars = await getCars({ status: "available" })
+    const shuffled = [...(cars || [])].sort(() => Math.random() - 0.5)
+    featuredCars = shuffled.slice(0, Math.min(3, Math.max(2, (shuffled?.length || 0) > 1 ? 3 : 2)))
+  } catch {
+    featuredCars = []
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Header currentPage="/" />
@@ -17,8 +56,8 @@ export default function HomePage() {
         {/* Background image – lage opacity, zachte blend */}
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1920&q=80"
-            alt="Auto werkplaats"
+            src={backgroundImageUrl}
+            alt="Autogarage Viorel – werkplaats en gevel"
             className="w-full h-full object-cover opacity-[0.12] scale-105"
           />
           <div className="absolute inset-0 mix-blend-multiply bg-sky-100/80" aria-hidden />
@@ -27,30 +66,56 @@ export default function HomePage() {
 
         {/* Hero content – gecentreerd */}
         <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-[100vw] flex justify-center">
-          <div className="max-w-2xl w-full text-center">
-            <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm text-sky-800 border border-sky-200/60 px-4 py-2.5 rounded-full mb-6 shadow-sm">
-              <Shield className="w-4 h-4 flex-shrink-0" />
-              <span className="text-sm font-medium">APK via RDW-erkende partner</span>
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight text-gray-900 text-balance drop-shadow-sm">
-              Wij zijn uw auto specialist
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-700 mb-10 leading-relaxed max-w-xl mx-auto">
-              Autogarage Viorel is uw betrouwbare partner voor onderhoud, reparaties,
-              APK keuringen en kwaliteit occasions in Terneuzen en omgeving.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/occasions">
-                <Button size="lg" className="bg-sky-600 hover:bg-sky-700 text-white px-8 shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto">
-                  Bekijk ons aanbod
-                  <ChevronRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-              <Link href="/contact">
-                <Button size="lg" variant="outline" className="border-2 border-sky-700 text-sky-800 hover:bg-sky-600 hover:text-white bg-white/90 backdrop-blur-sm shadow-sm w-full sm:w-auto">
-                  Contact opnemen
-                </Button>
-              </Link>
+          <div className="w-full max-w-7xl">
+            <div className="grid lg:grid-cols-[460px_1fr] gap-10 items-start">
+              <div className="max-w-2xl w-full text-center lg:text-left mx-auto lg:mx-0">
+                <div className="inline-flex items-center gap-2 bg-gray-900 text-white border border-gray-800 px-4 py-2 rounded-full mb-5 shadow-md">
+                  <Shield className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-sm font-semibold tracking-wide">APK via RDW-erkende partner</span>
+                </div>
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-[1.05] text-gray-900 text-balance">
+                  Uw betrouwbare
+                  <span className="block text-sky-700">auto specialist</span>
+                </h1>
+                <p className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                  Onderhoud, reparaties, APK en kwaliteit occasions in Terneuzen.
+                  Eerlijk advies, duidelijke prijzen en service waar u op kunt rekenen.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-8">
+                  <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-gray-800">
+                    <Wrench className="w-4 h-4 text-sky-600" />
+                    <span>Onderhoud & reparatie</span>
+                  </div>
+                  <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-gray-800">
+                    <CheckCircle className="w-4 h-4 text-sky-600" />
+                    <span>Occasions gecontroleerd</span>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center lg:justify-start">
+                  <Link href="/occasions">
+                    <Button size="lg" className="bg-sky-600 hover:bg-sky-700 text-white px-8 shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto">
+                      Bekijk ons aanbod
+                      <ChevronRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </Link>
+                  <Link href="/contact">
+                    <Button size="lg" variant="outline" className="border-2 border-sky-700 text-sky-800 hover:bg-sky-600 hover:text-white bg-white/90 backdrop-blur-sm shadow-sm w-full sm:w-auto">
+                      Contact opnemen
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Hero foto slider (voor desktop en mobile) */}
+              <div className="order-2 lg:order-none w-full mt-10 lg:mt-0 lg:justify-self-center">
+                <HeroPhotoSlider
+                  slides={[
+                    { src: collageWideImageUrl, alt: "Autogarage Viorel – werkplaats en gevel", caption: "Vakmanschap, onderhoud en occasions" },
+                    { src: collageSquare1ImageUrl, alt: "Autowerkplaats sfeerbeeld" },
+                    { src: collageSquare2ImageUrl, alt: "Auto detail sfeerbeeld" },
+                  ]}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -186,6 +251,72 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Mini occasions - willekeurig 2/3 auto's */}
+      <section className="py-10 md:py-14 bg-white overflow-hidden border-b">
+        <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
+          <div className="flex items-end justify-between gap-6 mb-8">
+            <div className="min-w-0">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Occasions uitgelicht</h2>
+              <p className="text-gray-600 text-sm sm:text-base">
+                Bekijk wat er momenteel beschikbaar is.
+              </p>
+            </div>
+            <Link href="/occasions">
+              <Button variant="outline" className="border-sky-300 text-sky-700 hover:border-sky-400 hover:bg-sky-50">
+                Alle occasions
+                <ChevronRight className="w-5 h-5 ml-1" />
+              </Button>
+            </Link>
+          </div>
+
+          {featuredCars.length === 0 ? (
+            <div className="text-center py-10">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-sky-100 flex items-center justify-center mb-4">
+                <Car className="w-6 h-6 text-sky-600" />
+              </div>
+              <p className="text-gray-700 font-medium mb-1">Nog geen occasions beschikbaar</p>
+              <p className="text-gray-500 text-sm">Kom later nog eens terug.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {featuredCars.map((car) => {
+                const img = car.images?.[0]?.image_url || "/placeholder.svg"
+                const priceText =
+                  typeof car.price === "number"
+                    ? `€ ${car.price?.toLocaleString("nl-NL")},-`
+                    : "Prijs op aanvraag"
+
+                return (
+                  <Link key={car.id} href={`/occasions/${car.id}`} className="group">
+                    <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <div className="relative h-44 sm:h-40 overflow-hidden">
+                        <img
+                          src={img}
+                          alt={`${car.brand} ${car.model}`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" aria-hidden />
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <p className="text-white text-sm font-semibold">{priceText}</p>
+                        </div>
+                      </div>
+                      <CardContent className="p-5">
+                        <h3 className="text-lg font-bold text-gray-900 mb-1">
+                          {car.brand} {car.model}
+                        </h3>
+                        <p className="text-gray-600 text-sm">
+                          {car.year} · {car.mileage?.toLocaleString("nl-NL")} km
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* USPs Section – lichtblauw */}
       <section className="py-12 md:py-16 bg-sky-100 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
@@ -282,15 +413,7 @@ export default function HomePage() {
                   loading="eager"
                 />
               </div>
-              <div className="absolute left-4 bottom-4 bg-blue-600 text-white p-4 rounded-xl shadow-xl z-10 max-w-[200px]">
-                <div className="flex items-center gap-3">
-                  <Star className="w-8 h-8 text-yellow-400 fill-yellow-400 flex-shrink-0" />
-                  <div>
-                    <div className="text-2xl font-bold">4.9/5</div>
-                    <div className="text-blue-100 text-sm">Klantbeoordeling</div>
-                  </div>
-                </div>
-              </div>
+              {/* Rating badge weggelaten (volgens wens) */}
             </div>
           </div>
         </div>
