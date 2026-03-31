@@ -51,17 +51,17 @@ export default async function HomePage() {
     <div className="min-h-screen bg-white">
       <Header currentPage="/" />
       
-      {/* Hero Section – gecentreerd, lichtblauw met zachte overgang */}
-      <section className="relative min-h-[85vh] sm:min-h-screen flex items-center justify-center pt-28 pb-20 sm:pt-32 sm:pb-24 lg:pt-40 lg:pb-28 bg-sky-50 overflow-hidden">
-        {/* Background image – lage opacity, zachte blend */}
+      {/* Hero Section – professioneel, rustig kleurgebruik */}
+      <section className="relative min-h-[85vh] sm:min-h-screen flex items-center justify-center pt-28 pb-20 sm:pt-32 sm:pb-24 lg:pt-40 lg:pb-28 bg-slate-50 overflow-hidden">
+        {/* Background image – subtiele donkerblauwe blend */}
         <div className="absolute inset-0 z-0">
           <img
             src={backgroundImageUrl}
             alt="Autogarage Viorel – werkplaats en gevel"
-            className="w-full h-full object-cover opacity-[0.12] scale-105"
+            className="w-full h-full object-cover opacity-[0.11] scale-105"
           />
-          <div className="absolute inset-0 mix-blend-multiply bg-sky-100/80" aria-hidden />
-          <div className="absolute inset-0 bg-gradient-to-b from-sky-50/70 via-sky-50/30 to-white" aria-hidden />
+          <div className="absolute inset-0 mix-blend-multiply bg-slate-200/70" aria-hidden />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-100/80 via-slate-50/40 to-white" aria-hidden />
         </div>
 
         {/* Hero content – gecentreerd */}
@@ -69,37 +69,39 @@ export default async function HomePage() {
           <div className="w-full max-w-7xl">
             <div className="grid lg:grid-cols-[460px_1fr] gap-10 items-start">
               <div className="max-w-2xl w-full text-center lg:text-left mx-auto lg:mx-0">
-                <div className="inline-flex items-center gap-2 bg-gray-900 text-white border border-gray-800 px-4 py-2 rounded-full mb-5 shadow-md">
-                  <Shield className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm font-semibold tracking-wide">APK via RDW-erkende partner</span>
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-slate-200 bg-white/95 px-3.5 py-2 mb-5 text-slate-800 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-50 ring-1 ring-blue-100">
+                    <Shield className="w-3.5 h-3.5 flex-shrink-0 text-blue-700" />
+                  </span>
+                  <span className="text-sm font-semibold tracking-tight">APK via RDW-erkende partner</span>
                 </div>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-[1.05] text-gray-900 text-balance">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold mb-4 leading-[1.08] tracking-tight text-slate-900 text-balance antialiased">
                   Uw betrouwbare
-                  <span className="block text-sky-700">auto specialist</span>
+                  <span className="block text-blue-900">auto specialist</span>
                 </h1>
-                <p className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                <p className="text-base sm:text-lg text-slate-700 mb-6 leading-relaxed max-w-xl mx-auto lg:mx-0">
                   Onderhoud, reparaties, APK en kwaliteit occasions in Terneuzen.
                   Eerlijk advies, duidelijke prijzen en service waar u op kunt rekenen.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-8">
-                  <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-gray-800">
-                    <Wrench className="w-4 h-4 text-sky-600" />
+                  <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-slate-800">
+                    <Wrench className="w-4 h-4 text-blue-700" />
                     <span>Onderhoud & reparatie</span>
                   </div>
-                  <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-gray-800">
-                    <CheckCircle className="w-4 h-4 text-sky-600" />
+                  <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-slate-800">
+                    <CheckCircle className="w-4 h-4 text-blue-700" />
                     <span>Occasions gecontroleerd</span>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center lg:justify-start">
                   <Link href="/occasions">
-                    <Button size="lg" className="bg-sky-600 hover:bg-sky-700 text-white px-8 shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto">
+                    <Button size="lg" className="bg-blue-900 hover:bg-blue-950 text-white px-8 shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto">
                       Bekijk ons aanbod
                       <ChevronRight className="w-5 h-5 ml-2" />
                     </Button>
                   </Link>
                   <Link href="/contact">
-                    <Button size="lg" variant="outline" className="border-2 border-sky-700 text-sky-800 hover:bg-sky-600 hover:text-white bg-white/90 backdrop-blur-sm shadow-sm w-full sm:w-auto">
+                    <Button size="lg" variant="outline" className="border-2 border-slate-300 text-slate-800 hover:border-blue-900 hover:bg-blue-900 hover:text-white bg-white/95 backdrop-blur-sm shadow-sm w-full sm:w-auto">
                       Contact opnemen
                     </Button>
                   </Link>
@@ -160,7 +162,7 @@ export default async function HomePage() {
       <section id="diensten" className="py-12 md:py-20 bg-gray-50 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="text-center mb-10 md:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Ons aanbod</h2>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 mb-4">Ons aanbod</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Van onderhoud tot verkoop - wij bieden complete automotive diensten
             </p>
@@ -256,7 +258,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="flex items-end justify-between gap-6 mb-8">
             <div className="min-w-0">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Occasions uitgelicht</h2>
+              <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 mb-2">Occasions uitgelicht</h2>
               <p className="text-gray-600 text-sm sm:text-base">
                 Bekijk wat er momenteel beschikbaar is.
               </p>
@@ -366,7 +368,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div className="min-w-0 order-2 lg:order-1">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">Over Autogarage Viorel</h2>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-4 sm:mb-6">Over Autogarage Viorel</h2>
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
                 Autogarage Viorel is een familiebedrijf dat al jaren actief is in de 
                 automotive sector in Terneuzen. Wij zijn gespecialiseerd in de in- en 
@@ -423,7 +425,7 @@ export default async function HomePage() {
       <section className="py-12 md:py-20 bg-gray-50 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="text-center mb-10 md:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Onze diensten</h2>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 mb-4">Onze diensten</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Complete automotive diensten onder één dak
             </p>
@@ -481,7 +483,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
             <div className="min-w-0">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">Contact</h2>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-4 sm:mb-6">Contact</h2>
               <p className="text-lg text-gray-600 mb-8">
                 Heeft u vragen of wilt u een afspraak maken? Neem gerust contact met ons op!
               </p>

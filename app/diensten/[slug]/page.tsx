@@ -88,7 +88,7 @@ export default async function DienstenSlugPage({ params }: Props) {
               <Wrench className="w-4 h-4" />
               <span className="text-sm font-medium">Dienst</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4 text-balance leading-tight">
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-slate-900 mb-4 text-balance leading-[1.08] antialiased">
               {content.title}
             </h1>
             <p className="text-xl text-gray-700 leading-relaxed max-w-xl mx-auto">
@@ -105,7 +105,7 @@ export default async function DienstenSlugPage({ params }: Props) {
             <p className="text-lg text-gray-600 leading-relaxed mb-12">
               {content.intro}
             </p>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Wat wij bieden</h2>
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 mb-6">Wat wij bieden</h2>
             <ul className="space-y-4">
               {content.features.map((feature, i) => (
                 <li key={i} className="flex items-start gap-3">
@@ -134,7 +134,7 @@ export default async function DienstenSlugPage({ params }: Props) {
       {/* Andere diensten */}
       <section className="py-12 lg:py-16 bg-gray-50 border-t">
         <div className="container mx-auto px-4">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Overige diensten</h2>
+          <h2 className="text-xl font-semibold tracking-tight text-slate-900 mb-6">Overige diensten</h2>
           <div className="flex flex-wrap gap-3">
             {DIENSTEN_DROPDOWN_LABELS.filter((l) => getSlugForLabel(l) !== slug).map((label) => (
               <Link

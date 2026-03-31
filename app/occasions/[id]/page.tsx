@@ -86,7 +86,7 @@ export default async function OccasionDetailPage({ params }: Props) {
             </div>
 
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-2 antialiased">
                 {car.brand} {car.model}
               </h1>
               <p className="text-lg text-gray-600 mb-6">
@@ -182,7 +182,7 @@ export default async function OccasionDetailPage({ params }: Props) {
         {/* Beschrijving */}
         {car.description && (
           <section className="container mx-auto px-4 py-8 border-t">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Beschrijving</h2>
+            <h2 className="text-xl font-semibold tracking-tight text-slate-900 mb-4">Beschrijving</h2>
             <p className="text-gray-600 leading-relaxed max-w-3xl">{car.description}</p>
           </section>
         )}
@@ -190,7 +190,7 @@ export default async function OccasionDetailPage({ params }: Props) {
         {/* Uitrusting */}
         {car.features && car.features.length > 0 && (
           <section className="container mx-auto px-4 py-8 border-t">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Uitrusting</h2>
+            <h2 className="text-xl font-semibold tracking-tight text-slate-900 mb-4">Uitrusting</h2>
             <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {car.features.map((feature, i) => (
                 <li key={i} className="flex items-center gap-2">
@@ -205,7 +205,7 @@ export default async function OccasionDetailPage({ params }: Props) {
         {/* Contact CTA */}
         <section className="container mx-auto px-4 py-12 border-t">
           <div className="max-w-2xl p-8 bg-gray-900 text-white rounded-2xl">
-            <h2 className="text-xl font-bold mb-2">Interesse in deze {car.brand} {car.model}?</h2>
+            <h2 className="text-xl font-semibold tracking-tight mb-2">Interesse in deze {car.brand} {car.model}?</h2>
             <p className="text-gray-300 mb-6">
               Neem contact op voor meer informatie of om een proefrit in te plannen. Wij staan u graag te woord.
             </p>

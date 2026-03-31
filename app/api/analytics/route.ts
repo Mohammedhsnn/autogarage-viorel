@@ -52,17 +52,22 @@ export async function GET(request: NextRequest) {
   const weekStart = new Date(now)
   weekStart.setDate(weekStart.getDate() - 7)
   const weekStartStr = weekStart.toISOString()
+  const weekdayWindowStart = new Date(now)
+  weekdayWindowStart.setDate(weekdayWindowStart.getDate() - 60)
+  const weekdayWindowStartStr = weekdayWindowStart.toISOString()
 
   const [
     { count: total },
     { count: today },
     { count: week },
     { data: byPath },
+    { data: byWeekdayRows },
   ] = await Promise.all([
     supabase.from("page_views").select("*", { count: "exact", head: true }),
     supabase.from("page_views").select("*", { count: "exact", head: true }).gte("created_at", todayStart),
     supabase.from("page_views").select("*", { count: "exact", head: true }).gte("created_at", weekStartStr),
     supabase.from("page_views").select("path").gte("created_at", weekStartStr),
+    supabase.from("page_views").select("created_at").gte("created_at", weekdayWindowStartStr),
   ])
 
   const pathCounts: Record<string, number> = {}
@@ -75,6 +80,22 @@ export async function GET(request: NextRequest) {
     .slice(0, 15)
     .map(([path, views]) => ({ path, views }))
 
+  // Views per weekdag (laatste 60 dagen)
+  const weekdayLabels = ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"]
+  const weekdayCounts = [0, 0, 0, 0, 0, 0, 0]
+  for (const row of byWeekdayRows || []) {
+    const d = new Date(row.created_at)
+    const weekday = d.getDay() // 0-6 (zo-za)
+    weekdayCounts[weekday] += 1
+  }
+  const weekdayTotal = weekdayCounts.reduce((sum, v) => sum + v, 0)
+  const weekdayStats = weekdayLabels.map((label, idx) => {
+    const views = weekdayCounts[idx]
+    const percentage = weekdayTotal > 0 ? Math.round((views / weekdayTotal) * 100) : 0
+    return { dayIndex: idx, day: label, views, percentage }
+  })
+  const peakWeekday = [...weekdayStats].sort((a, b) => b.views - a.views)[0] || null
+
   return NextResponse.json({
     success: true,
     stats: {
@@ -82,6 +103,9 @@ export async function GET(request: NextRequest) {
       today: today ?? 0,
       thisWeek: week ?? 0,
     },
+    weekdayWindowDays: 60,
+    weekdayStats,
+    peakWeekday,
     topPaths,
   })
 }

@@ -71,7 +71,7 @@ export default async function DienstenPage() {
               <Settings className="w-4 h-4" />
               <span className="text-sm font-medium">{HERO.badge}</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 text-balance leading-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-white mb-6 text-balance leading-[1.08] antialiased">
               {HERO.title}
             </h1>
             <p className="text-lg sm:text-xl text-gray-300 mb-10 leading-relaxed max-w-xl mx-auto">
@@ -103,7 +103,7 @@ export default async function DienstenPage() {
       <section className="py-10 sm:py-16 lg:py-20 bg-gray-50 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="text-center mb-12 lg:mb-16 animate-fade-in">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">{MAIN_SECTION.title}</h2>
+            <h2 className="text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-4">{MAIN_SECTION.title}</h2>
             <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
               {MAIN_SECTION.subtitle}
             </p>
@@ -157,7 +157,7 @@ export default async function DienstenPage() {
       <section className="py-10 sm:py-16 lg:py-20 bg-white overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="text-center mb-12 lg:mb-16 animate-fade-in">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">{ADDITIONAL_SECTION.title}</h2>
+            <h2 className="text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-4">{ADDITIONAL_SECTION.title}</h2>
             <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
               {ADDITIONAL_SECTION.subtitle}
             </p>
@@ -199,7 +199,7 @@ export default async function DienstenPage() {
       <section className="py-10 sm:py-16 lg:py-20 bg-gray-50 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="text-center mb-12 lg:mb-16 animate-fade-in">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">{HOW_WE_WORK.title}</h2>
+            <h2 className="text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-4">{HOW_WE_WORK.title}</h2>
             <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
               {HOW_WE_WORK.subtitle}
             </p>
@@ -222,7 +222,7 @@ export default async function DienstenPage() {
       <section className="py-10 sm:py-16 lg:py-20 bg-white overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="text-center mb-12 lg:mb-16 animate-fade-in">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">{PRICING_SECTION.title}</h2>
+            <h2 className="text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-4">{PRICING_SECTION.title}</h2>
             <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
               {PRICING_SECTION.subtitle}
             </p>

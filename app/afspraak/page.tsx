@@ -119,7 +119,7 @@ export default function AfspraakPage() {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Afspraak gepland</h1>
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 mb-4 antialiased">Afspraak gepland</h1>
             <p className="text-gray-600 mb-2">
               Uw afspraak op <strong>{formatDate(date)}</strong> om <strong>{timeSlot}</strong> is vastgelegd.
             </p>
@@ -148,7 +148,7 @@ export default function AfspraakPage() {
               <Calendar className="w-4 h-4 flex-shrink-0" />
               Plan direct uw afspraak
             </p>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-semibold tracking-tight leading-[1.08] mb-4 antialiased">
               Online afspraak maken
             </h1>
             <p className="text-base sm:text-lg text-gray-200 mb-6 max-w-xl mx-auto">
@@ -192,7 +192,7 @@ export default function AfspraakPage() {
             {step === 1 && (
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">Kies een datum</h2>
+                  <h2 className="text-xl font-semibold tracking-tight text-slate-900 mb-4">Kies een datum</h2>
                   <p className="text-gray-600 text-sm mb-4">Selecteer een dag (maandag t/m zaterdag)</p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {upcomingDates.map((d) => (
@@ -226,7 +226,7 @@ export default function AfspraakPage() {
             {step === 2 && (
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">Kies een tijd</h2>
+                  <h2 className="text-xl font-semibold tracking-tight text-slate-900 mb-4">Kies een tijd</h2>
                   <p className="text-gray-600 text-sm mb-4">
                     {date && formatDate(date)} – beschikbare tijden
                   </p>
@@ -276,7 +276,7 @@ export default function AfspraakPage() {
             {step === 3 && (
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">Uw gegevens</h2>
+                  <h2 className="text-xl font-semibold tracking-tight text-slate-900 mb-4">Uw gegevens</h2>
                   <p className="text-gray-600 text-sm mb-4">
                     {formatDate(date)} om {timeSlot}
                   </p>

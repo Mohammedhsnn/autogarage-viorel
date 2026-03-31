@@ -141,7 +141,7 @@ export default function OccasionsPage() {
               <CheckCircle className="w-4 h-4" />
               <span className="text-sm font-medium">Alle auto's met garantie</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 text-balance">Ons aanbod</h1>
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.08] text-white mb-6 text-balance antialiased">Ons aanbod</h1>
             <p className="text-lg sm:text-xl text-gray-300 mb-8 max-w-xl mx-auto">
               Ontdek ons uitgebreide aanbod van kwaliteit occasions. Alle auto's zijn
               grondig gecontroleerd en komen met garantie.

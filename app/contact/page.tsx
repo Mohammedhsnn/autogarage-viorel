@@ -28,7 +28,7 @@ export default function ContactPage() {
               <MessageCircle className="w-4 h-4 flex-shrink-0" />
               <span className="text-sm font-medium">Wij staan voor u klaar</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.08] text-white mb-4 antialiased">
               Contact
             </h1>
             <p className="text-base sm:text-lg text-gray-300 max-w-xl mx-auto">
@@ -108,7 +108,7 @@ export default function ContactPage() {
           {/* Kaart + formulier */}
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
             <div className="order-2 lg:order-1 min-w-0">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Waar u ons vindt</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 mb-4">Waar u ons vindt</h2>
               <div className="rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-gray-200 min-h-[250px] sm:min-h-[320px]">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1922.0894993170316!2d3.845279449749082!3d51.30937381551679!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c4804169494e63%3A0x3953f04c913435b6!2sAutobedrijf%20Viorel!5e1!3m2!1sen!2snl!4v1770891996736!5m2!1sen!2snl"
@@ -127,7 +127,7 @@ export default function ContactPage() {
             <div className="order-1 lg:order-2 min-w-0">
               <Card className="border-0 shadow-lg">
                 <CardContent className="p-5 sm:p-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Stuur ons een bericht</h2>
+                  <h2 className="text-2xl font-semibold tracking-tight text-slate-900 mb-2">Stuur ons een bericht</h2>
                   <p className="text-gray-600 mb-6">
                     Vul het formulier in en wij nemen zo snel mogelijk contact met u op.
                   </p>
@@ -196,7 +196,7 @@ export default function ContactPage() {
       {/* CTA Afspraak */}
       <section className="py-10 sm:py-12 bg-white border-t overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw] text-center">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Direct een afspraak plannen?</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 mb-2">Direct een afspraak plannen?</h2>
           <p className="text-gray-600 mb-6 max-w-xl mx-auto">
             Vul ons afspraakformulier in met uw wensen; wij nemen contact op om de afspraak te bevestigen.
           </p>

@@ -18,10 +18,20 @@ interface PathCount {
   views: number
 }
 
+interface WeekdayStat {
+  dayIndex: number
+  day: string
+  views: number
+  percentage: number
+}
+
 export default function AdminAnalyticsPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [stats, setStats] = useState<AnalyticsStats | null>(null)
   const [topPaths, setTopPaths] = useState<PathCount[]>([])
+  const [weekdayStats, setWeekdayStats] = useState<WeekdayStat[]>([])
+  const [weekdayWindowDays, setWeekdayWindowDays] = useState<number>(60)
+  const [peakWeekday, setPeakWeekday] = useState<WeekdayStat | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -44,13 +54,20 @@ export default function AdminAnalyticsPage() {
       if (data.success && data.stats) {
         setStats(data.stats)
         setTopPaths(data.topPaths || [])
+        setWeekdayStats(data.weekdayStats || [])
+        setWeekdayWindowDays(data.weekdayWindowDays || 60)
+        setPeakWeekday(data.peakWeekday || null)
       } else {
         setStats({ total: 0, today: 0, thisWeek: 0 })
         setTopPaths([])
+        setWeekdayStats([])
+        setPeakWeekday(null)
       }
     } catch {
       setStats({ total: 0, today: 0, thisWeek: 0 })
       setTopPaths([])
+      setWeekdayStats([])
+      setPeakWeekday(null)
     } finally {
       setLoading(false)
     }
@@ -171,6 +188,49 @@ export default function AdminAnalyticsPage() {
                     </table>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle>Bezoek per weekdag</CardTitle>
+                <p className="text-sm text-gray-500">
+                  Inzicht over de laatste {weekdayWindowDays} dagen. Zo ziet u welke dagen het vaakst bekeken worden.
+                </p>
+              </CardHeader>
+              <CardContent>
+                {weekdayStats.length === 0 ? (
+                  <p className="text-gray-500 py-8 text-center">Nog geen weekdagdata beschikbaar.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {weekdayStats
+                      .slice()
+                      .sort((a, b) => b.views - a.views)
+                      .map((row) => (
+                        <div key={row.day} className="space-y-1">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium text-gray-800">{row.day}</span>
+                            <span className="text-gray-600">
+                              {row.views} weergaven ({row.percentage}%)
+                            </span>
+                          </div>
+                          <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-sky-500 rounded-full"
+                              style={{ width: `${Math.max(row.percentage, row.views > 0 ? 4 : 0)}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+
+                {peakWeekday ? (
+                  <div className="mt-6 rounded-lg bg-sky-50 border border-sky-100 p-4 text-sm text-sky-900">
+                    Drukste dag: <span className="font-semibold">{peakWeekday.day}</span> met{" "}
+                    <span className="font-semibold">{peakWeekday.views}</span> weergaven in de laatste {weekdayWindowDays} dagen.
+                  </div>
+                ) : null}
               </CardContent>
             </Card>
           </>

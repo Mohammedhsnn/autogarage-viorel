@@ -36,6 +36,11 @@ export default function Header({ currentPage = "" }: HeaderProps) {
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="flex justify-between items-center text-sm flex-wrap gap-x-6 gap-y-1">
             <div className="flex items-center gap-6 xl:gap-8 flex-wrap">
+              <img
+                src="/rdw-logo.png"
+                alt="RDW"
+                className="h-6 w-auto object-contain"
+              />
               <a href="tel:+31618809802" className="flex items-center gap-2 hover:text-blue-400 transition-colors whitespace-nowrap">
                 <Phone className="w-4 h-4 flex-shrink-0" />
                 <span className="font-medium">+31 (6)18 80 98 02</span>

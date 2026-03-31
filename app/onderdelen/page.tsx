@@ -181,7 +181,7 @@ export default function OnderdelenPage() {
               <Package className="w-4 h-4 flex-shrink-0" />
               <span className="text-sm font-medium">Zoeken naar onderdelen</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.08] text-white mb-4 antialiased">
               Onderdelen voorraad
             </h1>
             <p className="text-base sm:text-lg text-gray-300 max-w-xl mx-auto">
@@ -195,7 +195,7 @@ export default function OnderdelenPage() {
       <section className="py-8 sm:py-10 lg:py-14 bg-slate-50 border-b overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="max-w-4xl mx-auto min-w-0">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Zoeken naar onderdelen</h2>
+            <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-slate-900 mb-4 sm:mb-6">Zoeken naar onderdelen</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <Label htmlFor="kenteken">Kenteken</Label>
@@ -367,7 +367,7 @@ export default function OnderdelenPage() {
 
             {searched && !loading && (
               <>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-semibold tracking-tight text-slate-900 mb-4">
                   {onderdelen.length === 0
                     ? "Geen onderdelen gevonden"
                     : `${onderdelen.length} onderdeel${onderdelen.length === 1 ? "" : "en"} gevonden`}
@@ -440,7 +440,7 @@ export default function OnderdelenPage() {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Filters sidebar */}
             <aside className="lg:w-56 flex-shrink-0">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Onderdelen aanbod</h2>
+              <h2 className="text-lg font-semibold tracking-tight text-slate-900 mb-4">Onderdelen aanbod</h2>
               <p className="text-sm text-gray-600 mb-4">
                 Bekijk ons aanbod. Zoek hierboven naar onderdelen op kenteken of artikelnummer, of bel ons voor een aanvraag.
               </p>
