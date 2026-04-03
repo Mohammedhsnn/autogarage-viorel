@@ -9,9 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Save, Loader2, X } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { ArrowLeft, Save, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { getCarById, updateCar } from "@/app/actions"
+import { CarImagesEditor } from "@/components/admin/CarImagesEditor"
 
 const fuelTypes = ["Benzine", "Diesel", "Hybrid", "Elektrisch", "LPG"]
 const transmissionTypes = ["Handgeschakeld", "Automaat"]
@@ -42,6 +44,7 @@ export default function EditCarPage() {
   const router = useRouter()
   const params = useParams()
   const carId = params.id as string
+  const { toast } = useToast()
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -65,7 +68,6 @@ export default function EditCarPage() {
   })
 
   const [images, setImages] = useState<string[]>([])
-  const [newImage, setNewImage] = useState("")
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([])
 
   useEffect(() => {
@@ -113,6 +115,14 @@ export default function EditCarPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (images.length === 0) {
+      toast({
+        title: "Minimaal één foto",
+        description: "Voeg ten minste één foto toe (upload of link) voordat u opslaat.",
+        variant: "destructive",
+      })
+      return
+    }
     setSaving(true)
 
     try {
@@ -130,17 +140,6 @@ export default function EditCarPage() {
     } finally {
       setSaving(false)
     }
-  }
-
-  const addImage = () => {
-    if (newImage && !images.includes(newImage)) {
-      setImages([...images, newImage])
-      setNewImage("")
-    }
-  }
-
-  const removeImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index))
   }
 
   const toggleFeature = (feature: string) => {
@@ -371,46 +370,13 @@ export default function EditCarPage() {
 
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Foto's</CardTitle>
+              <CardTitle>Foto&apos;s</CardTitle>
+              <p className="text-sm text-gray-500 mt-1">
+                Upload nieuwe foto&apos;s vanaf uw computer, voeg links toe, of wijzig de volgorde (eerste = hoofdfoto op de website).
+              </p>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Foto URL"
-                  value={newImage}
-                  onChange={(e) => setNewImage(e.target.value)}
-                  className="flex-1"
-                />
-                <Button type="button" onClick={addImage}>
-                  Toevoegen
-                </Button>
-              </div>
-
-              {images.length > 0 && (
-                <div className="grid grid-cols-3 gap-4">
-                  {images.map((img, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={img || "/placeholder.svg"}
-                        alt={`Auto foto ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                      {index === 0 && (
-                        <span className="absolute bottom-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                          Hoofdfoto
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+            <CardContent>
+              <CarImagesEditor images={images} onChange={setImages} />
             </CardContent>
           </Card>
 

@@ -366,56 +366,43 @@ export default async function HomePage() {
       {/* About Section */}
       <section id="over-ons" className="py-12 md:py-20 bg-white overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-            <div className="min-w-0 order-2 lg:order-1">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-4 sm:mb-6">Over Autogarage Viorel</h2>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                Autogarage Viorel is een familiebedrijf dat al jaren actief is in de 
-                automotive sector in Terneuzen. Wij zijn gespecialiseerd in de in- en 
-                verkoop van auto's, onderhoud, reparaties en APK keuringen.
-              </p>
-              <p className="text-gray-600 mb-8 leading-relaxed">
-                Ons motto "Eerlijk, betaalbaar, betrouwbaar" staat centraal in alles 
-                wat wij doen. Bij ons staat persoonlijke service voorop en behandelen 
-                wij elke klant met respect en professionaliteit.
-              </p>
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-4 sm:mb-6">
+              Over Autogarage Viorel
+            </h2>
+            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+              Autogarage Viorel is een familiebedrijf dat al jaren actief is in de 
+              automotive sector in Terneuzen. Wij zijn gespecialiseerd in de in- en 
+              verkoop van auto's, onderhoud, reparaties en APK keuringen.
+            </p>
+            <p className="text-gray-600 mb-8 leading-relaxed">
+              Ons motto "Eerlijk, betaalbaar, betrouwbaar" staat centraal in alles 
+              wat wij doen. Bij ons staat persoonlijke service voorop en behandelen 
+              wij elke klant met respect en professionaliteit.
+            </p>
 
-              <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
-                <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
-                  <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">15+</div>
-                  <div className="text-xs sm:text-sm text-gray-600">Jaar ervaring</div>
-                </div>
-                <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
-                  <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">1000+</div>
-                  <div className="text-xs sm:text-sm text-gray-600">Tevreden klanten</div>
-                </div>
-                <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
-                  <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">100%</div>
-                  <div className="text-xs sm:text-sm text-gray-600">Inzet</div>
-                </div>
+            <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8 max-w-xl mx-auto">
+              <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
+                <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">15+</div>
+                <div className="text-xs sm:text-sm text-gray-600">Jaar ervaring</div>
               </div>
+              <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
+                <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">1000+</div>
+                <div className="text-xs sm:text-sm text-gray-600">Tevreden klanten</div>
+              </div>
+              <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
+                <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">100%</div>
+                <div className="text-xs sm:text-sm text-gray-600">Inzet</div>
+              </div>
+            </div>
 
+            <div className="flex justify-center">
               <Link href="/contact">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
                   Neem contact op
                   <ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-            </div>
-
-            <div className="relative min-w-0 order-1 lg:order-2">
-              <div className="relative aspect-[4/3] min-h-[280px] w-full overflow-hidden rounded-2xl shadow-2xl bg-gray-200">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/over-autogarage-viorel.png"
-                  alt="Autogarage Viorel – gevel en uithangbord met diensten"
-                  className="absolute inset-0 h-full w-full rounded-2xl object-cover"
-                  width={800}
-                  height={600}
-                  loading="eager"
-                />
-              </div>
-              {/* Rating badge weggelaten (volgens wens) */}
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import type { Metadata } from "next"
 import Link from "next/link"
 import {
   Phone,
@@ -10,7 +11,6 @@ import {
   Cog,
   CheckCircle,
   ChevronLeft,
-  ChevronRight,
   MapPin,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -22,13 +22,59 @@ import { CarImageGallery } from "./CarImageGallery"
 
 type Props = { params: Promise<{ id: string }> }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const car = await getCarById(Number(id))
   if (!car) return { title: "Auto niet gevonden" }
+
+  const title = `${car.brand} ${car.model} (${car.year}) | Occasions`
+  const priceStr =
+    car.price != null ? `€ ${Number(car.price).toLocaleString("nl-NL")},-` : "Prijs op aanvraag"
+  const description =
+    (car.description && car.description.trim().slice(0, 200)) ||
+    `${car.brand} ${car.model}, ${car.year}, ${priceStr}. Occasion bij Autogarage Viorel in Terneuzen.`
+
+  const rawImg = car.images?.[0]?.image_url
+  let ogImage: string | undefined
+  if (typeof rawImg === "string" && rawImg.length > 0) {
+    if (rawImg.startsWith("https://") || rawImg.startsWith("http://")) {
+      ogImage = rawImg
+    } else {
+      ogImage = rawImg.startsWith("/") ? rawImg : `/${rawImg}`
+    }
+  }
+
+  const path = `/occasions/${id}`
+
   return {
-    title: `${car.brand} ${car.model} (${car.year}) | Occasions | Autogarage Viorel`,
-    description: car.description || `${car.brand} ${car.model}, ${car.year}, € ${car.price?.toLocaleString("nl-NL")},-`,
+    title,
+    description,
+    openGraph: {
+      title: `${car.brand} ${car.model} (${car.year})`,
+      description,
+      type: "website",
+      locale: "nl_NL",
+      siteName: "Autogarage Viorel",
+      url: path,
+      ...(ogImage
+        ? {
+            images: [
+              {
+                url: ogImage,
+                width: 1200,
+                height: 630,
+                alt: `${car.brand} ${car.model}`,
+              },
+            ],
+          }
+        : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${car.brand} ${car.model} (${car.year})`,
+      description,
+      ...(ogImage ? { images: [ogImage] } : {}),
+    },
   }
 }
 
@@ -40,44 +86,44 @@ export default async function OccasionDetailPage({ params }: Props) {
   const car = await getCarById(carId)
   if (!car || car.status !== "available") notFound()
 
-  const mainImage = car.images?.[0]?.image_url || "/placeholder.svg"
-
   return (
     <div className="min-h-screen bg-white">
       <Header currentPage="/occasions" />
 
-      {/* Breadcrumb */}
-      <div className="bg-gray-50 border-b">
-        <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center gap-2 text-sm text-gray-600">
-            <Link href="/" className="hover:text-blue-600 transition-colors">
-              Home
-            </Link>
-            <span>/</span>
-            <Link href="/occasions" className="hover:text-blue-600 transition-colors">
-              Occasions
-            </Link>
-            <span>/</span>
-            <span className="text-gray-900 font-medium">
-              {car.brand} {car.model}
-            </span>
-          </nav>
+      {/* Ruimte onder vaste header (zelfde orde als /occasions-overzicht: pt-28 / lg ~120px) */}
+      <div className="pt-28 sm:pt-32 lg:pt-[120px]">
+        {/* Breadcrumb */}
+        <div className="bg-gray-50 border-b border-slate-200/80">
+          <div className="container mx-auto px-4 py-3 sm:py-3.5">
+            <nav className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 min-w-0">
+              <Link href="/" className="hover:text-blue-600 transition-colors shrink-0">
+                Home
+              </Link>
+              <span className="shrink-0 text-gray-400">/</span>
+              <Link href="/occasions" className="hover:text-blue-600 transition-colors shrink-0">
+                Occasions
+              </Link>
+              <span className="shrink-0 text-gray-400">/</span>
+              <span className="text-gray-900 font-medium truncate min-w-0" title={`${car.brand} ${car.model}`}>
+                {car.brand} {car.model}
+              </span>
+            </nav>
+          </div>
         </div>
-      </div>
 
-      <main className="pb-16">
-        {/* Gallery + titel + prijs */}
-        <section className="container mx-auto px-4 pt-6 lg:pt-8">
+        <main className="pb-12 sm:pb-16">
+          {/* Gallery + titel + prijs */}
+          <section className="container mx-auto px-4 pt-6 sm:pt-8 lg:pt-10">
           <Link
             href="/occasions"
-            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 mb-6"
+            className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 mb-4 sm:mb-6 -ml-0.5"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4 shrink-0" />
             Terug naar overzicht
           </Link>
 
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-            <div className="space-y-4">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+            <div className="space-y-4 min-w-0">
               <CarImageGallery
                 images={car.images || []}
                 brand={car.brand}
@@ -85,28 +131,28 @@ export default async function OccasionDetailPage({ params }: Props) {
               />
             </div>
 
-            <div>
-              <h1 className="text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-2 antialiased">
+            <div className="min-w-0 flex flex-col">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-2 antialiased leading-tight">
                 {car.brand} {car.model}
               </h1>
-              <p className="text-lg text-gray-600 mb-6">
+              <p className="text-sm sm:text-lg text-slate-600 mb-4 sm:mb-6 leading-relaxed">
                 {car.year} · {car.mileage?.toLocaleString("nl-NL")} km · {car.fuel} · {car.transmission}
               </p>
-              <div className="flex flex-wrap items-baseline gap-4 mb-8">
-                <span className="text-3xl font-bold text-blue-600">
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-6 sm:mb-8 pb-6 sm:pb-0 border-b border-slate-100 sm:border-0">
+                <span className="text-2xl sm:text-3xl font-bold text-blue-600 tabular-nums">
                   € {car.price?.toLocaleString("nl-NL")},-
                 </span>
-                <span className="text-gray-500">Vraagprijs</span>
+                <span className="text-sm text-slate-500">Vraagprijs</span>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <a href="tel:+31618809802">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+                <a href="tel:+31618809802" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 min-h-[48px]">
                     <Phone className="w-5 h-5 mr-2" />
                     Bel voor informatie
                   </Button>
                 </a>
-                <Link href="/contact">
-                  <Button size="lg" variant="outline">
+                <Link href="/contact" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto min-h-[48px] border-slate-300">
                     <Mail className="w-5 h-5 mr-2" />
                     Proefrit aanvragen
                   </Button>
@@ -114,9 +160,11 @@ export default async function OccasionDetailPage({ params }: Props) {
               </div>
 
               {/* Belangrijkste specificaties direct onder de CTA-knoppen */}
-              <div className="mt-8 border-t pt-6">
-                <h2 className="text-sm font-semibold text-gray-500 mb-3">Belangrijkste specificaties</h2>
-                <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
+              <div className="mt-6 sm:mt-8 rounded-xl border border-slate-200/80 bg-slate-50/80 p-4 sm:border-0 sm:bg-transparent sm:p-0 sm:rounded-none">
+                <h2 className="text-sm font-semibold text-slate-700 mb-3">
+                  Belangrijkste specificaties
+                </h2>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-4 text-sm text-gray-700">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-gray-400" />
                     <div>
@@ -181,21 +229,21 @@ export default async function OccasionDetailPage({ params }: Props) {
 
         {/* Beschrijving */}
         {car.description && (
-          <section className="container mx-auto px-4 py-8 border-t">
-            <h2 className="text-xl font-semibold tracking-tight text-slate-900 mb-4">Beschrijving</h2>
-            <p className="text-gray-600 leading-relaxed max-w-3xl">{car.description}</p>
+          <section className="container mx-auto px-4 py-8 sm:py-10 border-t border-slate-100">
+            <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-slate-900 mb-3 sm:mb-4">Beschrijving</h2>
+            <p className="text-slate-600 leading-relaxed max-w-3xl text-[15px] sm:text-base">{car.description}</p>
           </section>
         )}
 
         {/* Uitrusting */}
         {car.features && car.features.length > 0 && (
-          <section className="container mx-auto px-4 py-8 border-t">
-            <h2 className="text-xl font-semibold tracking-tight text-slate-900 mb-4">Uitrusting</h2>
-            <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <section className="container mx-auto px-4 py-8 sm:py-10 border-t border-slate-100">
+            <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-slate-900 mb-3 sm:mb-4">Uitrusting</h2>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-2.5">
               {car.features.map((feature, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                  <span className="text-gray-700">{feature}</span>
+                <li key={i} className="flex items-start gap-2.5 min-w-0">
+                  <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-slate-700 text-[15px] sm:text-sm leading-snug">{feature}</span>
                 </li>
               ))}
             </ul>
@@ -203,33 +251,40 @@ export default async function OccasionDetailPage({ params }: Props) {
         )}
 
         {/* Contact CTA */}
-        <section className="container mx-auto px-4 py-12 border-t">
-          <div className="max-w-2xl p-8 bg-gray-900 text-white rounded-2xl">
-            <h2 className="text-xl font-semibold tracking-tight mb-2">Interesse in deze {car.brand} {car.model}?</h2>
-            <p className="text-gray-300 mb-6">
+        <section className="container mx-auto px-4 py-8 sm:py-12 border-t border-slate-100">
+          <div className="max-w-2xl mx-auto lg:mx-0 p-5 sm:p-8 bg-gray-900 text-white rounded-xl sm:rounded-2xl">
+            <h2 className="text-lg sm:text-xl font-semibold tracking-tight mb-2 leading-snug">
+              Interesse in deze {car.brand} {car.model}?
+            </h2>
+            <p className="text-slate-300 mb-5 sm:mb-6 text-sm sm:text-base leading-relaxed">
               Neem contact op voor meer informatie of om een proefrit in te plannen. Wij staan u graag te woord.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <a href="tel:+31618809802">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+              <a href="tel:+31618809802" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 min-h-[48px]">
                   <Phone className="w-5 h-5 mr-2" />
                   Bel ons
                 </Button>
               </a>
-              <Link href="/contact">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-gray-900">
+              <Link href="/contact" className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto min-h-[48px] border-2 border-white bg-transparent text-white shadow-none hover:bg-white hover:text-gray-900"
+                >
                   <Mail className="w-5 h-5 mr-2" />
                   Contact
                 </Button>
               </Link>
             </div>
-            <div className="mt-6 flex items-center gap-2 text-gray-400 text-sm">
-              <MapPin className="w-4 h-4" />
-              Ambachtsstraat 1-A, 4538 AV Terneuzen
+            <div className="mt-5 sm:mt-6 flex items-start gap-2 text-slate-400 text-sm">
+              <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>Ambachtsstraat 1-A, 4538 AV Terneuzen</span>
             </div>
           </div>
         </section>
       </main>
+      </div>
 
       <Footer />
       <FloatingActions />

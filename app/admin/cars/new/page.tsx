@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,8 +10,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
-import { ArrowLeft, Upload, X, Car, ImagePlus, Info } from "lucide-react"
+import { ArrowLeft, Car, Info } from "lucide-react"
 import Link from "next/link"
+import { CarImagesEditor } from "@/components/admin/CarImagesEditor"
 
 const features = [
   "Airconditioning",
@@ -46,17 +47,8 @@ export default function NewCarPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [images, setImages] = useState<string[]>([])
-  const [imageUrlInput, setImageUrlInput] = useState("")
-  const [uploadingImages, setUploadingImages] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const { toast } = useToast()
-
-  const openFileDialog = () => {
-    if (uploadingImages) return
-    fileInputRef.current?.click()
-  }
 
   const [formData, setFormData] = useState({
     brand: "",
@@ -94,84 +86,6 @@ export default function NewCarPage() {
       ...prev,
       features: checked ? [...prev.features, feature] : prev.features.filter((f) => f !== feature),
     }))
-  }
-
-  const uploadFiles = async (files: FileList | File[]) => {
-    const list = Array.from(files).filter((f) => f.type.startsWith("image/") || /\.(jpe?g|png|webp|gif)$/i.test(f.name))
-    if (list.length === 0) {
-      toast({ title: "Geen afbeeldingen", description: "Selecteer alleen afbeeldingen (JPEG, PNG, WebP, GIF).", variant: "destructive" })
-      return
-    }
-    setUploadingImages(true)
-    try {
-      const formDataUpload = new FormData()
-      list.forEach((file) => formDataUpload.append("files", file))
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formDataUpload,
-        credentials: "include",
-      })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) {
-        const msg = res.status === 401 ? "Sessie verlopen. Log opnieuw in bij het adminpanel." : (data.error || "Probeer het opnieuw.")
-        toast({ title: "Upload mislukt", description: msg, variant: "destructive" })
-        if (res.status === 401) router.push("/admin")
-        return
-      }
-      if (data.urls && data.urls.length > 0) {
-        setImages((prev) => [...prev, ...data.urls])
-        toast({ title: "Foto's toegevoegd", description: `${data.urls.length} foto${data.urls.length !== 1 ? "'s" : ""} geüpload.` })
-      }
-    } catch {
-      toast({ title: "Upload mislukt", description: "Controleer je verbinding en probeer het opnieuw.", variant: "destructive" })
-    } finally {
-      setUploadingImages(false)
-    }
-  }
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files || files.length === 0) return
-    await uploadFiles(files)
-    e.target.value = ""
-  }
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (!uploadingImages) setIsDragging(true)
-  }
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-  }
-
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-    if (uploadingImages) return
-    const files = e.dataTransfer.files
-    if (!files || files.length === 0) return
-    await uploadFiles(files)
-  }
-
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const addImageByUrl = () => {
-    const url = imageUrlInput.trim()
-    if (!url) return
-    if (!url.startsWith("http")) {
-      toast({ title: "Ongeldige link", description: "Voer een volledige URL in (bijv. https://...)", variant: "destructive" })
-      return
-    }
-    setImages((prev) => [...prev, url])
-    setImageUrlInput("")
-    toast({ title: "Foto toegevoegd", description: "De afbeelding staat in de lijst." })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -392,101 +306,12 @@ export default function NewCarPage() {
           <Card>
             <CardHeader>
               <CardTitle>Foto's *</CardTitle>
-              <CardDescription>Minimaal één foto. U kunt bestanden uploaden of een link naar een afbeelding plakken.</CardDescription>
+              <CardDescription>
+                Minimaal één foto. Upload vanaf uw computer, sleep bestanden, of plak een link. Zet de gewenste hoofdfoto bovenaan met de pijlen of de ster-knop.
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <div className="flex-1">
-                    <Label htmlFor="image-url" className="text-sm text-gray-600">Afbeelding toevoegen via link</Label>
-                    <Input
-                      id="image-url"
-                      type="url"
-                      value={imageUrlInput}
-                      onChange={(e) => setImageUrlInput(e.target.value)}
-                      placeholder="https://voorbeeld.nl/foto.jpg"
-                      className="mt-1"
-                    />
-                  </div>
-                  <Button type="button" variant="outline" onClick={addImageByUrl} className="sm:mt-6 shrink-0">
-                    <ImagePlus className="w-4 h-4 mr-2" />
-                    Link toevoegen
-                  </Button>
-                </div>
-
-                <div>
-                  <Label className="text-sm text-gray-600">Of upload vanaf uw apparaat</Label>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="sr-only"
-                    aria-hidden
-                    tabIndex={-1}
-                    disabled={uploadingImages}
-                  />
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={openFileDialog}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault()
-                        openFileDialog()
-                      }
-                    }}
-                    className={`mt-1 border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                      isDragging
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-300 hover:border-blue-400 hover:bg-gray-50/50"
-                    } ${uploadingImages ? "pointer-events-none opacity-70" : "cursor-pointer"}`}
-                  >
-                    <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-                    <p className="text-sm font-medium text-gray-700 mb-1">
-                      {isDragging ? "Laat los om te uploaden" : "Sleep foto's hierheen"}
-                    </p>
-                    <p className="text-sm text-gray-500 mb-4">
-                      of klik om uit je bestanden te kiezen (JPEG, PNG, WebP, GIF – max 10 MB)
-                    </p>
-                    <span className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background hover:bg-accent hover:text-accent-foreground">
-                      {uploadingImages ? "Bezig met uploaden..." : "Bestanden kiezen"}
-                    </span>
-                  </div>
-                </div>
-
-                {images.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {images.map((image, index) => (
-                      <div key={`${image}-${index}`} className="relative group">
-                        <div className="aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 border">
-                          <img
-                            src={image}
-                            alt={`Foto ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <span className="absolute top-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
-                          {index === 0 ? "Hoofdfoto" : index + 1}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute top-1 right-1 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center shadow hover:bg-red-600"
-                          aria-label="Foto verwijderen"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {images.length > 0 && <p className="text-sm text-gray-500">{images.length} foto{images.length !== 1 ? "'s" : ""} toegevoegd. Eerste foto = hoofdfoto.</p>}
-              </div>
+              <CarImagesEditor images={images} onChange={setImages} />
             </CardContent>
           </Card>
 

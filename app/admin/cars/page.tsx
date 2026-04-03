@@ -5,8 +5,60 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, Plus, Search, Edit, Trash2, Car, Loader2 } from "lucide-react"
+import { ArrowLeft, Plus, Search, Edit, Trash2, Car, Loader2, Facebook, Copy, Link2 } from "lucide-react"
 import Link from "next/link"
+import { useToast } from "@/hooks/use-toast"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { getOccasionPublicUrl } from "@/lib/site-url"
+
+function buildFacebookPostText(car: {
+  id: number
+  brand: string
+  model: string
+  year: number
+  price?: number
+  mileage?: number
+  fuel?: string
+  transmission?: string
+  color?: string
+  doors?: number
+}): string {
+  const url = getOccasionPublicUrl(car.id)
+  const price =
+    car.price != null && !Number.isNaN(Number(car.price))
+      ? `€ ${Number(car.price).toLocaleString("nl-NL")},-`
+      : "Prijs op aanvraag"
+  const km =
+    car.mileage != null && !Number.isNaN(Number(car.mileage))
+      ? `${Number(car.mileage).toLocaleString("nl-NL")} km`
+      : null
+
+  const lines: string[] = [
+    `🚗 ${car.brand} ${car.model} (${car.year})`,
+    "",
+    `💰 ${price}`,
+  ]
+  if (km) lines.push(`📏 ${km}`)
+  const specBits = [car.fuel, car.transmission, car.color, car.doors != null ? `${car.doors} deuren` : null].filter(Boolean)
+  if (specBits.length) lines.push(specBits.join(" • "))
+  lines.push(
+    "",
+    "Bekijk deze occasion op onze website:",
+    url,
+    "",
+    "— Autogarage Viorel",
+    "Terneuzen",
+  )
+
+  return lines.join("\n")
+}
 
 export default function CarsManagementPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -14,7 +66,9 @@ export default function CarsManagementPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [isLoading, setIsLoading] = useState(true)
+  const [facebookShareCar, setFacebookShareCar] = useState<(typeof cars)[0] | null>(null)
   const router = useRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("admin-logged-in")
@@ -39,6 +93,46 @@ export default function CarsManagementPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const copyFacebookFullText = async () => {
+    if (!facebookShareCar) return
+    const text = buildFacebookPostText(facebookShareCar)
+    try {
+      await navigator.clipboard.writeText(text)
+      toast({
+        title: "Tekst gekopieerd",
+        description: "Open Facebook hieronder, maak een post en plak met Ctrl+V (of lang indrukken op je telefoon).",
+      })
+    } catch {
+      toast({
+        title: "Kopiëren mislukt",
+        description: "Selecteer de tekst in het vak en kopieer handmatig (Ctrl+C).",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const copyOccasionLinkOnly = async () => {
+    if (!facebookShareCar) return
+    const shareUrl = getOccasionPublicUrl(facebookShareCar.id)
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      toast({ title: "Link gekopieerd", description: shareUrl })
+    } catch {
+      toast({ title: "Kopiëren mislukt", variant: "destructive" })
+    }
+  }
+
+  const openFacebookNewPost = () => {
+    window.open("https://www.facebook.com/", "_blank", "noopener,noreferrer")
+  }
+
+  const openFacebookShareWithPreview = () => {
+    if (!facebookShareCar) return
+    const shareUrl = getOccasionPublicUrl(facebookShareCar.id)
+    const fb = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`
+    window.open(fb, "_blank", "noopener,noreferrer")
   }
 
   const deleteCar = async (id: number) => {
@@ -188,18 +282,30 @@ export default function CarsManagementPage() {
                       <div>{car.doors} deuren</div>
                     </div>
 
-                    <div className="flex gap-2">
-                      <Link href={`/admin/cars/${car.id}/edit`} className="flex-1">
+                    <div className="flex flex-wrap gap-2">
+                      <Link href={`/admin/cars/${car.id}/edit`} className="min-w-0 flex-1">
                         <Button size="sm" variant="outline" className="w-full bg-transparent">
                           <Edit className="w-4 h-4 mr-2" />
                           Bewerken
                         </Button>
                       </Link>
                       <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                        onClick={() => setFacebookShareCar(car)}
+                        title="Tekst kopiëren en uitleg voor Facebook"
+                      >
+                        <Facebook className="w-4 h-4 mr-2 shrink-0" />
+                        Facebook
+                      </Button>
+                      <Button
                         size="sm"
                         variant="outline"
                         onClick={() => deleteCar(car.id)}
                         className="text-red-600 hover:bg-red-50"
+                        aria-label="Verwijderen"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -226,6 +332,75 @@ export default function CarsManagementPage() {
           </div>
         )}
       </div>
+
+      <Dialog open={!!facebookShareCar} onOpenChange={(open) => !open && setFacebookShareCar(null)}>
+        <DialogContent className="max-h-[min(90vh,800px)] max-w-2xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Deel op Facebook</DialogTitle>
+            <DialogDescription asChild>
+              <div className="space-y-2 text-left text-sm text-muted-foreground">
+                <p>
+                  Facebook laat geen kant-en-klare tekst of foto’s automatisch in het venster zetten (beleid). Wel kunt u
+                  hieronder de tekst <strong className="text-foreground">kopiëren en plakken</strong>, en de link deelt een{" "}
+                  <strong className="text-foreground">automatische voorbeeldfoto</strong> van de occasion-pagina.
+                </p>
+                <p className="text-xs">
+                  Staat het voorbeeld nog niet goed? Eenmalig{" "}
+                  <a
+                    href={
+                      facebookShareCar
+                        ? `https://developers.facebook.com/tools/debug/?q=${encodeURIComponent(getOccasionPublicUrl(facebookShareCar.id))}`
+                        : "https://developers.facebook.com/tools/debug/"
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
+                    Facebook opnieuw laten scrapen
+                  </a>{" "}
+                  (Sharing Debugger).
+                </p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+
+          {facebookShareCar && (
+            <>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Tekst voor uw post (plakken in Facebook)</label>
+                <textarea
+                  readOnly
+                  rows={16}
+                  className="w-full resize-y rounded-md border border-input bg-muted/30 px-3 py-2 text-sm leading-relaxed"
+                  value={buildFacebookPostText(facebookShareCar)}
+                  onFocus={(e) => e.target.select()}
+                />
+              </div>
+              <DialogFooter className="flex-col gap-2 sm:flex-col">
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" className="bg-blue-600 hover:bg-blue-700" onClick={copyFacebookFullText}>
+                    <Copy className="mr-2 h-4 w-4" />
+                    Kopieer hele tekst
+                  </Button>
+                  <Button type="button" variant="outline" onClick={copyOccasionLinkOnly}>
+                    <Link2 className="mr-2 h-4 w-4" />
+                    Kopieer alleen link
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" variant="secondary" onClick={openFacebookNewPost}>
+                    Open Facebook (plak daar de tekst)
+                  </Button>
+                  <Button type="button" variant="outline" className="border-blue-200 text-blue-800" onClick={openFacebookShareWithPreview}>
+                    <Facebook className="mr-2 h-4 w-4" />
+                    Deel link met fotovoorbeeld
+                  </Button>
+                </div>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

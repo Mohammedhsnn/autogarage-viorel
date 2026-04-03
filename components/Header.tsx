@@ -30,7 +30,9 @@ export default function Header({ currentPage = "" }: HeaderProps) {
   }, [])
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 bg-white ${scrolled ? "shadow-lg" : "shadow-sm"}`}>
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/90 lg:bg-white lg:backdrop-blur-none ${scrolled ? "shadow-lg" : "shadow-sm"}`}
+    >
       {/* Top bar - desktop only */}
       <div className="bg-gray-900 text-white py-2.5 hidden lg:block">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
@@ -63,18 +65,28 @@ export default function Header({ currentPage = "" }: HeaderProps) {
       </div>
 
       {/* Main navigation */}
-      <div className="bg-white">
+      <div className="relative bg-gradient-to-b from-slate-50/90 to-white lg:bg-white lg:from-white lg:to-white">
+        {/* Mobiel: subtiele accentlijn onder de balk */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-blue-700 via-blue-500 to-slate-300 lg:hidden pointer-events-none"
+          aria-hidden
+        />
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
-          <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20 gap-2 min-h-[56px]">
-            {/* Logo: op mobile alleen tekst, vanaf sm logo + tekst */}
-            <Link href="/" className="flex items-center gap-3 group min-w-0">
+          <div className="flex items-center justify-between gap-2 min-h-[56px] py-2 sm:py-0 sm:h-16 lg:h-20">
+            {/* Logo: mobiel met compacte merkregel + logo; vanaf sm zoals voorheen */}
+            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0 flex-1">
               <img
                 src="/logo.png"
                 alt=""
-                className="h-12 w-auto object-contain hidden sm:block flex-shrink-0"
+                className="h-9 w-auto object-contain flex-shrink-0 sm:h-12 drop-shadow-sm"
               />
-              <div className="sm:hidden">
-                <h1 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors truncate">Autogarage Viorel</h1>
+              <div className="min-w-0 sm:hidden">
+                <h1 className="text-[17px] font-bold leading-tight text-slate-900 group-hover:text-blue-700 transition-colors truncate">
+                  Autogarage Viorel
+                </h1>
+                <p className="text-[11px] text-slate-500 leading-snug truncate mt-0.5">
+                  Eerlijk · betaalbaar · Terneuzen
+                </p>
               </div>
               <div className="hidden sm:block min-w-0">
                 <h1 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Autogarage Viorel</h1>
@@ -168,16 +180,18 @@ export default function Header({ currentPage = "" }: HeaderProps) {
               </Link>
             </div>
 
-            {/* Mobile menu button - min 44px touch target */}
+            {/* Mobile menu — min. 44px touch target, geen gevulde cirkel */}
             <button
-              className="lg:hidden p-3 -m-1 rounded-lg hover:bg-gray-100 transition-colors touch-manipulation"
+              type="button"
+              className="lg:hidden flex-shrink-0 flex items-center justify-center min-w-[44px] min-h-[44px] p-2.5 -mr-1 rounded-lg text-slate-800 hover:bg-slate-100/90 active:bg-slate-200/80 transition-colors touch-manipulation"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Menu sluiten" : "Menu openen"}
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? (
-                <X className="w-6 h-6 text-gray-700" />
+                <X className="w-6 h-6" strokeWidth={2} />
               ) : (
-                <Menu className="w-6 h-6 text-gray-700" />
+                <Menu className="w-6 h-6" strokeWidth={2} />
               )}
             </button>
           </div>

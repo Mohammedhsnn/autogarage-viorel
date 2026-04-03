@@ -4,19 +4,22 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Analytics from './analytics'
 import { Toaster } from '@/components/ui/toaster'
+import { getPublicSiteBase } from '@/lib/site-url'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getPublicSiteBase()),
   title: {
-    default: 'Autogarage Viorel',
-    template: '%s | Autogarage Viorel',
+    default: "Autogarage Viorel",
+    template: "%s | Autogarage Viorel",
   },
-  description: 'APK keuringen via partner, onderhoud, reparatie en occasions in Terneuzen. Eerlijk, betaalbaar, betrouwbaar.',
+  description:
+    "APK keuringen via partner, onderhoud, reparatie en occasions in Terneuzen. Eerlijk, betaalbaar, betrouwbaar.",
   icons: {
-    icon: '/favicon.png',
-    apple: '/favicon.png',
+    icon: "/favicon.png",
+    apple: "/favicon.png",
   },
 }
 
