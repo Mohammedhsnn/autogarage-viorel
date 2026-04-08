@@ -28,16 +28,13 @@ export default function EditOnderdeelPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
-    name: "",
+    barcode: "",
     description: "",
-    artikelnummer: "",
-    merk: "",
-    motorcode: "",
-    versnellingsbakcode: "",
-    chassisnummer: "",
-    kba_nummer: "",
-    category: "Overig",
+    voorraad: "",
+    waarde: "",
     price: "",
+    artikelnummer: "",
+    category: "Overig",
     image_url: "",
     is_active: true,
     sort_order: "0",
@@ -63,16 +60,13 @@ export default function EditOnderdeelPage() {
         if (res.ok && data.onderdeel) {
           const o = data.onderdeel
           setForm({
-            name: o.name ?? "",
+            barcode: o.barcode ?? "",
             description: o.description ?? "",
-            artikelnummer: o.artikelnummer ?? "",
-            merk: o.merk ?? "",
-            motorcode: o.motorcode ?? "",
-            versnellingsbakcode: o.versnellingsbakcode ?? "",
-            chassisnummer: o.chassisnummer ?? "",
-            kba_nummer: o.kba_nummer ?? "",
-            category: o.category?.trim() || "Overig",
+            voorraad: o.voorraad != null ? String(o.voorraad) : "",
+            waarde: o.waarde != null ? String(o.waarde) : "",
             price: o.price != null ? String(o.price) : "",
+            artikelnummer: o.artikelnummer ?? "",
+            category: o.category?.trim() || "Overig",
             image_url: o.image_url ?? "",
             is_active: o.is_active !== false,
             sort_order: o.sort_order != null ? String(o.sort_order) : "0",
@@ -99,7 +93,8 @@ export default function EditOnderdeelPage() {
 
   const validate = () => {
     const next: Record<string, string> = {}
-    if (!form.name.trim()) next.name = "Naam is verplicht"
+    if (!form.description.trim()) next.description = "Omschrijving is verplicht"
+    if (!form.artikelnummer.trim()) next.artikelnummer = "Onderdeelnummer is verplicht"
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -176,14 +171,11 @@ export default function EditOnderdeelPage() {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          name: form.name.trim(),
-          description: form.description.trim() || null,
-          artikelnummer: form.artikelnummer.trim() || null,
-          merk: form.merk.trim() || null,
-          motorcode: form.motorcode.trim() || null,
-          versnellingsbakcode: form.versnellingsbakcode.trim() || null,
-          chassisnummer: form.chassisnummer.trim() || null,
-          kba_nummer: form.kba_nummer.trim() || null,
+          description: form.description.trim(),
+          artikelnummer: form.artikelnummer.trim(),
+          barcode: form.barcode.trim() || null,
+          voorraad: form.voorraad.trim() ? parseInt(form.voorraad, 10) : null,
+          waarde: form.waarde.trim() ? parseInt(form.waarde, 10) : null,
           category: form.category.trim() || "Overig",
           price: form.price.trim() ? parseInt(form.price, 10) : null,
           image_url: form.image_url.trim() || null,
@@ -193,7 +185,7 @@ export default function EditOnderdeelPage() {
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        toast({ title: "Opgeslagen", description: form.name + " is bijgewerkt." })
+        toast({ title: "Opgeslagen", description: form.artikelnummer + " is bijgewerkt." })
         router.push("/admin/onderdelen")
       } else {
         toast({
@@ -245,7 +237,7 @@ export default function EditOnderdeelPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Onderdeel bewerken</h1>
-                <p className="text-sm text-gray-500">Wijzig gegevens of verwijder het onderdeel in de lijst</p>
+                <p className="text-sm text-gray-500">Voorraad en waarde alleen zichtbaar in admin</p>
               </div>
             </div>
           </div>
@@ -256,89 +248,68 @@ export default function EditOnderdeelPage() {
         <Card>
           <CardHeader>
             <CardTitle>Gegevens onderdeel</CardTitle>
-            <CardDescription>Wijzigingen verschijnen direct op /onderdelen (bij actief).</CardDescription>
+            <CardDescription>Wijzigingen verschijnen direct op /onderdelen (bij actief). Voorraad en waarde niet voor klanten.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Naam *</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  placeholder="Bijv. Koplamp links"
-                  className={errors.name ? "border-red-500" : ""}
-                />
-                {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
+                <Label htmlFor="barcode">Barcode</Label>
+                <Input id="barcode" name="barcode" value={form.barcode} onChange={handleChange} placeholder="Scan of typ barcode" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Omschrijving</Label>
+                <Label htmlFor="description">Omschrijving *</Label>
                 <Textarea
                   id="description"
                   name="description"
                   value={form.description}
                   onChange={handleChange}
                   placeholder="Korte omschrijving"
-                  rows={3}
+                  rows={4}
+                  className={errors.description ? "border-red-500" : ""}
                 />
+                {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="artikelnummer">Artikelnummer</Label>
-                  <Input id="artikelnummer" name="artikelnummer" value={form.artikelnummer} onChange={handleChange} />
+                  <Label htmlFor="voorraad">Voorraad</Label>
+                  <Input id="voorraad" name="voorraad" type="number" min={0} value={form.voorraad} onChange={handleChange} />
+                  <p className="text-xs text-gray-500">Alleen admin</p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="merk">Merk</Label>
-                  <Input id="merk" name="merk" value={form.merk} onChange={handleChange} placeholder="Bijv. Volkswagen" />
+                  <Label htmlFor="waarde">Waarde (€)</Label>
+                  <Input id="waarde" name="waarde" type="number" min={0} value={form.waarde} onChange={handleChange} />
+                  <p className="text-xs text-gray-500">Alleen admin</p>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="motorcode">Motorcode</Label>
-                  <Input id="motorcode" name="motorcode" value={form.motorcode} onChange={handleChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="versnellingsbakcode">Versnellingsbakcode</Label>
-                  <Input id="versnellingsbakcode" name="versnellingsbakcode" value={form.versnellingsbakcode} onChange={handleChange} />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="chassisnummer">Chassisnummer (VIN)</Label>
-                  <Input id="chassisnummer" name="chassisnummer" value={form.chassisnummer} onChange={handleChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="kba_nummer">KBA-nummer</Label>
-                  <Input id="kba_nummer" name="kba_nummer" value={form.kba_nummer} onChange={handleChange} />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="category">Categorie</Label>
-                  <Select value={form.category} onValueChange={(v) => setForm((p) => ({ ...p, category: v }))}>
-                    <SelectTrigger id="category">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORIEEN.map((c) => (
-                        <SelectItem key={c} value={c}>{c}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
                 <div className="space-y-2">
                   <Label htmlFor="price">Prijs (€)</Label>
-                  <Input
-                    id="price"
-                    name="price"
-                    type="number"
-                    min={0}
-                    value={form.price}
-                    onChange={handleChange}
-                    placeholder="Optioneel"
-                  />
+                  <Input id="price" name="price" type="number" min={0} value={form.price} onChange={handleChange} placeholder="Verkoopprijs" />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="artikelnummer">Onderdeelnummer *</Label>
+                  <Input
+                    id="artikelnummer"
+                    name="artikelnummer"
+                    value={form.artikelnummer}
+                    onChange={handleChange}
+                    className={errors.artikelnummer ? "border-red-500" : ""}
+                  />
+                  {errors.artikelnummer && <p className="text-sm text-red-600">{errors.artikelnummer}</p>}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="category">Categorie (filter op website)</Label>
+                <Select value={form.category} onValueChange={(v) => setForm((p) => ({ ...p, category: v }))}>
+                  <SelectTrigger id="category">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIEEN.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-3">
                 <Label>Afbeelding</Label>

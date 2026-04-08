@@ -34,6 +34,7 @@ interface Onderdeel {
   name: string
   description: string | null
   artikelnummer: string | null
+  barcode?: string | null
   merk: string | null
   motorcode: string | null
   versnellingsbakcode: string | null
@@ -401,17 +402,21 @@ export default function OnderdelenPage() {
                           )}
                           <div className="flex-1 min-w-0">
                             <h3 className="font-semibold text-gray-900">{o.name}</h3>
+                            {o.barcode && <p className="text-sm text-gray-600">Barcode: {o.barcode}</p>}
                             {o.artikelnummer && (
-                              <p className="text-sm text-gray-500">Art.nr. {o.artikelnummer}</p>
+                              <p className="text-sm text-gray-600">Onderdeelnummer: {o.artikelnummer}</p>
                             )}
                             {o.merk && (
                               <p className="text-sm text-gray-600">Merk: {o.merk}</p>
                             )}
                             {o.description && (
-                              <p className="text-sm text-gray-600 mt-1 line-clamp-2">{o.description}</p>
+                              <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                                <span className="font-medium text-gray-700">Omschrijving: </span>
+                                {o.description}
+                              </p>
                             )}
                             {o.price != null && (
-                              <p className="text-sm font-medium text-gray-900 mt-1">€ {o.price.toLocaleString()}</p>
+                              <p className="text-sm font-medium text-gray-900 mt-1">Prijs: € {o.price.toLocaleString("nl-NL")}</p>
                             )}
                           </div>
                           <div className="flex-shrink-0">
@@ -528,16 +533,20 @@ export default function OnderdelenPage() {
                         )}
                       </div>
                       <CardContent className="p-4 flex flex-col flex-1">
-                        <h3 className="font-semibold text-gray-900">{o.name}</h3>
-                        {o.merk && <p className="text-sm text-gray-500">Merk: {o.merk}</p>}
+                        <h3 className="font-semibold text-gray-900 line-clamp-2">{o.name}</h3>
+                        {o.barcode && <p className="text-sm text-gray-600 mt-1">Barcode: {o.barcode}</p>}
                         {o.artikelnummer && (
-                          <p className="text-sm text-gray-500">Art.nr. {o.artikelnummer}</p>
+                          <p className="text-sm text-gray-600">Onderdeelnummer: {o.artikelnummer}</p>
                         )}
+                        {o.merk && <p className="text-sm text-gray-500">Merk: {o.merk}</p>}
                         {o.description && (
-                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{o.description}</p>
+                          <p className="text-sm text-gray-600 mt-1 line-clamp-3">
+                            <span className="font-medium text-gray-700">Omschrijving: </span>
+                            {o.description}
+                          </p>
                         )}
                         {o.price != null && (
-                          <p className="mt-2 font-semibold text-gray-900">€ {o.price.toLocaleString()}</p>
+                          <p className="mt-2 font-semibold text-gray-900">Prijs: € {o.price.toLocaleString("nl-NL")}</p>
                         )}
                         <a href="tel:+31618809802" className="mt-3 inline-flex">
                           <Button variant="outline" size="sm" className="border-blue-600 text-blue-600 w-full sm:w-auto">

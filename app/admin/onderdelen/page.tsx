@@ -13,6 +13,9 @@ interface Onderdeel {
   name: string
   description: string | null
   artikelnummer: string | null
+  barcode?: string | null
+  voorraad?: number | null
+  waarde?: number | null
   merk: string | null
   motorcode: string | null
   category: string
@@ -58,13 +61,13 @@ export default function AdminOnderdelenPage() {
   }
 
   const handleDelete = async (o: Onderdeel) => {
-    if (!confirm(`Weet u zeker dat u "${o.name}" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`)) return
+    if (!confirm(`Weet u zeker dat u onderdeel "${o.artikelnummer || o.name}" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`)) return
     setDeletingId(o.id)
     try {
       const res = await fetch(`/api/onderdelen/${o.id}`, { method: "DELETE", credentials: "include" })
       const data = await res.json()
       if (res.ok && data.success) {
-        toast({ title: "Verwijderd", description: o.name + " is verwijderd." })
+        toast({ title: "Verwijderd", description: (o.artikelnummer || o.name) + " is verwijderd." })
         setOnderdelen((prev) => prev.filter((x) => x.id !== o.id))
       } else {
         toast({ title: "Fout", description: data.error || "Kon niet verwijderen", variant: "destructive" })
@@ -142,8 +145,11 @@ export default function AdminOnderdelenPage() {
                   <thead>
                     <tr className="border-b text-left">
                       <th className="py-3 px-4">Afbeelding</th>
-                      <th className="py-3 px-4">Naam</th>
-                      <th className="py-3 px-4">Art.nr / Merk</th>
+                      <th className="py-3 px-4">Omschrijving</th>
+                      <th className="py-3 px-4">Onderdeelnr.</th>
+                      <th className="py-3 px-4">Barcode</th>
+                      <th className="py-3 px-4">Voorraad</th>
+                      <th className="py-3 px-4">Waarde</th>
                       <th className="py-3 px-4">Categorie</th>
                       <th className="py-3 px-4">Prijs</th>
                       <th className="py-3 px-4">Status</th>
@@ -160,12 +166,13 @@ export default function AdminOnderdelenPage() {
                             <span className="text-gray-400">—</span>
                           )}
                         </td>
-                        <td className="py-3 px-4 font-medium">{o.name}</td>
-                        <td className="py-3 px-4 text-sm">
-                          {o.artikelnummer && <span>{o.artikelnummer}</span>}
-                          {o.merk && <span className="text-gray-500"> · {o.merk}</span>}
-                          {!o.artikelnummer && !o.merk && "—"}
+                        <td className="py-3 px-4 font-medium max-w-[200px] truncate" title={o.name}>
+                          {o.name}
                         </td>
+                        <td className="py-3 px-4 text-sm">{o.artikelnummer || "—"}</td>
+                        <td className="py-3 px-4 text-sm font-mono">{o.barcode || "—"}</td>
+                        <td className="py-3 px-4 text-sm">{o.voorraad != null ? o.voorraad : "—"}</td>
+                        <td className="py-3 px-4 text-sm">{o.waarde != null ? `€ ${o.waarde.toLocaleString()}` : "—"}</td>
                         <td className="py-3 px-4 text-sm">{o.category || "—"}</td>
                         <td className="py-3 px-4">
                           {o.price != null ? `€ ${o.price.toLocaleString()}` : "—"}

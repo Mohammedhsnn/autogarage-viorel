@@ -25,16 +25,13 @@ export default function NewOnderdeelPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
-    name: "",
+    barcode: "",
     description: "",
-    artikelnummer: "",
-    merk: "",
-    motorcode: "",
-    versnellingsbakcode: "",
-    chassisnummer: "",
-    kba_nummer: "",
-    category: "Overig",
+    voorraad: "",
+    waarde: "",
     price: "",
+    artikelnummer: "",
+    category: "Overig",
     image_url: "",
     is_active: true,
     sort_order: "0",
@@ -58,7 +55,8 @@ export default function NewOnderdeelPage() {
 
   const validate = () => {
     const next: Record<string, string> = {}
-    if (!form.name.trim()) next.name = "Naam is verplicht"
+    if (!form.description.trim()) next.description = "Omschrijving is verplicht"
+    if (!form.artikelnummer.trim()) next.artikelnummer = "Onderdeelnummer is verplicht"
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -139,16 +137,13 @@ export default function NewOnderdeelPage() {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          name: form.name.trim(),
-          description: form.description.trim() || null,
-          artikelnummer: form.artikelnummer.trim() || null,
-          merk: form.merk.trim() || null,
-          motorcode: form.motorcode.trim() || null,
-          versnellingsbakcode: form.versnellingsbakcode.trim() || null,
-          chassisnummer: form.chassisnummer.trim() || null,
-          kba_nummer: form.kba_nummer.trim() || null,
-          category: form.category.trim() || "Overig",
+          description: form.description.trim(),
+          artikelnummer: form.artikelnummer.trim(),
+          barcode: form.barcode.trim() || null,
+          voorraad: form.voorraad.trim() ? parseInt(form.voorraad, 10) : null,
+          waarde: form.waarde.trim() ? parseInt(form.waarde, 10) : null,
           price: form.price.trim() ? parseInt(form.price, 10) : null,
+          category: form.category.trim() || "Overig",
           image_url: form.image_url.trim() || null,
           is_active: form.is_active,
           sort_order: form.sort_order.trim() ? parseInt(form.sort_order, 10) : 0,
@@ -156,7 +151,7 @@ export default function NewOnderdeelPage() {
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        toast({ title: "Onderdeel toegevoegd", description: form.name })
+        toast({ title: "Onderdeel toegevoegd", description: form.artikelnummer })
         router.push("/admin/onderdelen")
       } else {
         toast({
@@ -200,8 +195,8 @@ export default function NewOnderdeelPage() {
                 <Package className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Nieuw Onderdeel</h1>
-                <p className="text-sm text-gray-500">Toevoegen aan onderdelen-voorraad</p>
+                <h1 className="text-xl font-bold text-gray-900">Nieuw onderdeel</h1>
+                <p className="text-sm text-gray-500">Voorraad en waarde zijn alleen zichtbaar in het admin</p>
               </div>
             </div>
           </div>
@@ -211,94 +206,93 @@ export default function NewOnderdeelPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Card>
           <CardHeader>
-            <CardTitle>Gegevens onderdeel</CardTitle>
-            <CardDescription>Dit onderdeel verschijnt bij zoeken naar onderdelen op /onderdelen.</CardDescription>
+            <CardTitle>Gegevens</CardTitle>
+            <CardDescription>
+              Vul barcode, omschrijving, voorraad, waarde, prijs en onderdeelnummer in. Op de website zien klanten geen voorraad en waarde.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Naam *</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  placeholder="Bijv. Koplamp links"
-                  className={errors.name ? "border-red-500" : ""}
-                />
-                {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
+                <Label htmlFor="barcode">Barcode</Label>
+                <Input id="barcode" name="barcode" value={form.barcode} onChange={handleChange} placeholder="Scan of typ barcode" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Omschrijving</Label>
+                <Label htmlFor="description">Omschrijving *</Label>
                 <Textarea
                   id="description"
                   name="description"
                   value={form.description}
                   onChange={handleChange}
-                  placeholder="Korte omschrijving"
-                  rows={3}
+                  placeholder="Korte omschrijving van het onderdeel"
+                  rows={4}
+                  className={errors.description ? "border-red-500" : ""}
                 />
+                {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="artikelnummer">Artikelnummer</Label>
-                  <Input id="artikelnummer" name="artikelnummer" value={form.artikelnummer} onChange={handleChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="merk">Merk</Label>
-                  <Input id="merk" name="merk" value={form.merk} onChange={handleChange} placeholder="Bijv. Volkswagen" />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="motorcode">Motorcode</Label>
-                  <Input id="motorcode" name="motorcode" value={form.motorcode} onChange={handleChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="versnellingsbakcode">Versnellingsbakcode</Label>
-                  <Input id="versnellingsbakcode" name="versnellingsbakcode" value={form.versnellingsbakcode} onChange={handleChange} />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="chassisnummer">Chassisnummer (VIN)</Label>
-                  <Input id="chassisnummer" name="chassisnummer" value={form.chassisnummer} onChange={handleChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="kba_nummer">KBA-nummer</Label>
-                  <Input id="kba_nummer" name="kba_nummer" value={form.kba_nummer} onChange={handleChange} />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="category">Categorie</Label>
-                  <Select value={form.category} onValueChange={(v) => setForm((p) => ({ ...p, category: v }))}>
-                    <SelectTrigger id="category">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORIEEN.map((c) => (
-                        <SelectItem key={c} value={c}>{c}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="price">Prijs (€)</Label>
+                  <Label htmlFor="voorraad">Voorraad</Label>
                   <Input
-                    id="price"
-                    name="price"
+                    id="voorraad"
+                    name="voorraad"
                     type="number"
                     min={0}
-                    value={form.price}
+                    value={form.voorraad}
                     onChange={handleChange}
-                    placeholder="Optioneel"
+                    placeholder="0"
                   />
+                  <p className="text-xs text-gray-500">Alleen zichtbaar in admin</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="waarde">Waarde (€)</Label>
+                  <Input
+                    id="waarde"
+                    name="waarde"
+                    type="number"
+                    min={0}
+                    value={form.waarde}
+                    onChange={handleChange}
+                    placeholder="Inkoop / waarde"
+                  />
+                  <p className="text-xs text-gray-500">Alleen zichtbaar in admin</p>
                 </div>
               </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="price">Prijs (€)</Label>
+                  <Input id="price" name="price" type="number" min={0} value={form.price} onChange={handleChange} placeholder="Verkoopprijs" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="artikelnummer">Onderdeelnummer *</Label>
+                  <Input
+                    id="artikelnummer"
+                    name="artikelnummer"
+                    value={form.artikelnummer}
+                    onChange={handleChange}
+                    className={errors.artikelnummer ? "border-red-500" : ""}
+                  />
+                  {errors.artikelnummer && <p className="text-sm text-red-600">{errors.artikelnummer}</p>}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="category">Categorie (voor filter op website)</Label>
+                <Select value={form.category} onValueChange={(v) => setForm((p) => ({ ...p, category: v }))}>
+                  <SelectTrigger id="category">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIEEN.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-3">
-                <Label>Afbeelding</Label>
-                <p className="text-sm text-gray-500">Optioneel. Upload een foto of plak een link.</p>
+                <Label>Afbeelding (optioneel)</Label>
+                <p className="text-sm text-gray-500">Upload een foto of plak een URL.</p>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <div className="flex-1">
                     <Input
@@ -307,7 +301,7 @@ export default function NewOnderdeelPage() {
                       type="url"
                       value={form.image_url}
                       onChange={handleChange}
-                      placeholder="https://... (of upload hieronder)"
+                      placeholder="https://..."
                     />
                   </div>
                 </div>
@@ -336,18 +330,11 @@ export default function NewOnderdeelPage() {
                       }
                     }}
                     className={`mt-1 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                      isDragging
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-300 hover:border-blue-400 hover:bg-gray-50/50"
+                      isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-blue-400 hover:bg-gray-50/50"
                     } ${uploadingImage ? "pointer-events-none opacity-70" : "cursor-pointer"}`}
                   >
                     <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm font-medium text-gray-700">
-                      {isDragging ? "Laat los om te uploaden" : "Sleep een foto hierheen"}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      of klik om een bestand te kiezen (JPEG, PNG, WebP, GIF – max 10 MB)
-                    </p>
+                    <p className="text-sm font-medium text-gray-700">{isDragging ? "Laat los om te uploaden" : "Sleep een foto hierheen of klik"}</p>
                     {uploadingImage && (
                       <p className="text-sm text-blue-600 mt-2 flex items-center justify-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin" /> Bezig met uploaden...
@@ -360,13 +347,7 @@ export default function NewOnderdeelPage() {
                     <div className="w-20 h-20 rounded-lg overflow-hidden border bg-gray-100 shrink-0">
                       <img src={form.image_url} alt="Preview" className="w-full h-full object-cover" />
                     </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="text-red-600 border-red-200"
-                      onClick={() => setForm((p) => ({ ...p, image_url: "" }))}
-                    >
+                    <Button type="button" variant="outline" size="sm" className="text-red-600 border-red-200" onClick={() => setForm((p) => ({ ...p, image_url: "" }))}>
                       <X className="w-4 h-4 mr-1" />
                       Verwijderen
                     </Button>
@@ -374,12 +355,10 @@ export default function NewOnderdeelPage() {
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <Checkbox
-                  id="is_active"
-                  checked={form.is_active}
-                  onCheckedChange={(c) => setForm((p) => ({ ...p, is_active: !!c }))}
-                />
-                <Label htmlFor="is_active" className="cursor-pointer">Actief (zichtbaar op zoekpagina)</Label>
+                <Checkbox id="is_active" checked={form.is_active} onCheckedChange={(c) => setForm((p) => ({ ...p, is_active: !!c }))} />
+                <Label htmlFor="is_active" className="cursor-pointer">
+                  Actief (zichtbaar op /onderdelen)
+                </Label>
               </div>
               <div className="flex gap-3 pt-4">
                 <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700">
@@ -387,7 +366,9 @@ export default function NewOnderdeelPage() {
                   Opslaan
                 </Button>
                 <Link href="/admin/onderdelen">
-                  <Button type="button" variant="outline">Annuleren</Button>
+                  <Button type="button" variant="outline">
+                    Annuleren
+                  </Button>
                 </Link>
               </div>
             </form>

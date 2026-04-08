@@ -8,34 +8,19 @@ import Footer from "@/components/Footer"
 import FloatingActions from "@/components/FloatingActions"
 import { getCars, getPageContent } from "@/app/actions"
 import HeroPhotoSlider from "@/components/HeroPhotoSlider"
+import { mergeHomePageContent } from "@/lib/homepage-content"
 
 // Zorg dat de homepage dynamisch blijft zodat CMS-wijzigingen (Supabase page_content) direct zichtbaar zijn.
 export const dynamic = "force-dynamic"
 
 export default async function HomePage() {
   const pageContent = await getPageContent("home")
-  const hero = (pageContent as any)?.hero ?? {}
-
-  const DEFAULT_BACKGROUND_IMAGE_URL = "/over-autogarage-viorel.png"
-  const DEFAULT_COLLAGE_WIDE_IMAGE_URL = "/over-autogarage-viorel.png"
-  const DEFAULT_COLLAGE_SQUARE_1_IMAGE_URL = "/uploads/cars/0a1fec5b-b1fb-41ca-9ea7-22b11700b4dc.webp"
-  const DEFAULT_COLLAGE_SQUARE_2_IMAGE_URL = "/uploads/cars/226d9937-c230-4657-94a8-ecb2a83f6925.webp"
-
-  const backgroundImageUrl =
-    typeof hero.background_image_url === "string" && hero.background_image_url.trim().length > 0
-      ? hero.background_image_url
-      : DEFAULT_BACKGROUND_IMAGE_URL
-
-  const collageWideImageUrl =
-    typeof hero.collage_wide_image_url === "string" && hero.collage_wide_image_url.trim().length > 0
-      ? hero.collage_wide_image_url
-      : DEFAULT_COLLAGE_WIDE_IMAGE_URL
-
-  const squareUrls: unknown[] = Array.isArray(hero.collage_square_image_urls) ? hero.collage_square_image_urls : []
-  const collageSquare1ImageUrl =
-    typeof squareUrls?.[0] === "string" && squareUrls[0].trim().length > 0 ? squareUrls[0] : DEFAULT_COLLAGE_SQUARE_1_IMAGE_URL
-  const collageSquare2ImageUrl =
-    typeof squareUrls?.[1] === "string" && squareUrls[1].trim().length > 0 ? squareUrls[1] : DEFAULT_COLLAGE_SQUARE_2_IMAGE_URL
+  const c = mergeHomePageContent(pageContent ?? undefined)
+  const h = c.hero
+  const backgroundImageUrl = h.background_image_url
+  const collageWideImageUrl = h.collage_wide_image_url
+  const collageSquare1ImageUrl = h.collage_square_image_urls[0]
+  const collageSquare2ImageUrl = h.collage_square_image_urls[1]
 
   // Mini occasions sectie: toon willekeurig 2-3 auto's uit de database
   let featuredCars: Array<any> = []
@@ -73,36 +58,35 @@ export default async function HomePage() {
                   <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-50 ring-1 ring-blue-100">
                     <Shield className="w-3.5 h-3.5 flex-shrink-0 text-blue-700" />
                   </span>
-                  <span className="text-sm font-semibold tracking-tight">APK via RDW-erkende partner</span>
+                  <span className="text-sm font-semibold tracking-tight">{h.badge_text}</span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold mb-4 leading-[1.08] tracking-tight text-slate-900 text-balance antialiased">
-                  Uw betrouwbare
-                  <span className="block text-blue-900">auto specialist</span>
+                  {h.headline_line1}
+                  <span className="block text-blue-900">{h.headline_highlight}</span>
                 </h1>
-                <p className="text-base sm:text-lg text-slate-700 mb-6 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                  Onderhoud, reparaties, APK en kwaliteit occasions in Terneuzen.
-                  Eerlijk advies, duidelijke prijzen en service waar u op kunt rekenen.
+                <p className="text-base sm:text-lg text-slate-700 mb-6 leading-relaxed max-w-xl mx-auto lg:mx-0 whitespace-pre-line">
+                  {h.intro}
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-8">
                   <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-slate-800">
                     <Wrench className="w-4 h-4 text-blue-700" />
-                    <span>Onderhoud & reparatie</span>
+                    <span>{h.bullet1}</span>
                   </div>
                   <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-slate-800">
                     <CheckCircle className="w-4 h-4 text-blue-700" />
-                    <span>Occasions gecontroleerd</span>
+                    <span>{h.bullet2}</span>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center lg:justify-start">
                   <Link href="/occasions">
                     <Button size="lg" className="bg-blue-900 hover:bg-blue-950 text-white px-8 shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto">
-                      Bekijk ons aanbod
+                      {h.cta_primary}
                       <ChevronRight className="w-5 h-5 ml-2" />
                     </Button>
                   </Link>
                   <Link href="/contact">
                     <Button size="lg" variant="outline" className="border-2 border-slate-300 text-slate-800 hover:border-blue-900 hover:bg-blue-900 hover:text-white bg-white/95 backdrop-blur-sm shadow-sm w-full sm:w-auto">
-                      Contact opnemen
+                      {h.cta_secondary}
                     </Button>
                   </Link>
                 </div>
@@ -112,7 +96,7 @@ export default async function HomePage() {
               <div className="order-2 lg:order-none w-full mt-10 lg:mt-0 lg:justify-self-center">
                 <HeroPhotoSlider
                   slides={[
-                    { src: collageWideImageUrl, alt: "Autogarage Viorel – werkplaats en gevel", caption: "Vakmanschap, onderhoud en occasions" },
+                    { src: collageWideImageUrl, alt: "Autogarage Viorel – werkplaats en gevel", caption: h.slider_caption_wide },
                     { src: collageSquare1ImageUrl, alt: "Autowerkplaats sfeerbeeld" },
                     { src: collageSquare2ImageUrl, alt: "Auto detail sfeerbeeld" },
                   ]}
@@ -127,33 +111,21 @@ export default async function HomePage() {
       <section className="bg-white py-8 sm:py-10 border-b overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10">
-            <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left gap-4 py-2">
-              <div className="w-14 h-14 shrink-0 rounded-xl bg-sky-100 flex items-center justify-center">
-                <Car className="w-7 h-7 text-sky-600" />
+            {[
+              { stat: c.stats[0], Icon: Car },
+              { stat: c.stats[1], Icon: Award },
+              { stat: c.stats[2], Icon: Users },
+            ].map(({ stat, Icon }, i) => (
+              <div key={i} className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left gap-4 py-2">
+                <div className="w-14 h-14 shrink-0 rounded-xl bg-sky-100 flex items-center justify-center">
+                  <Icon className="w-7 h-7 text-sky-600" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{stat.title}</div>
+                  <div className="text-gray-600 text-sm mt-0.5">{stat.subtitle}</div>
+                </div>
               </div>
-              <div className="min-w-0">
-                <div className="text-base sm:text-lg font-bold text-gray-900 leading-tight">Breed aanbod</div>
-                <div className="text-gray-600 text-sm mt-0.5">Kwaliteit occasions</div>
-              </div>
-            </div>
-            <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left gap-4 py-2">
-              <div className="w-14 h-14 shrink-0 rounded-xl bg-sky-100 flex items-center justify-center">
-                <Award className="w-7 h-7 text-sky-600" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-base sm:text-lg font-bold text-gray-900 leading-tight">15+ jaar</div>
-                <div className="text-gray-600 text-sm mt-0.5">Ervaring in de regio</div>
-              </div>
-            </div>
-            <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left gap-4 py-2">
-              <div className="w-14 h-14 shrink-0 rounded-xl bg-sky-100 flex items-center justify-center">
-                <Users className="w-7 h-7 text-sky-600" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-base sm:text-lg font-bold text-gray-900 leading-tight">Persoonlijk</div>
-                <div className="text-gray-600 text-sm mt-0.5">Wij staan voor u klaar</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -162,93 +134,35 @@ export default async function HomePage() {
       <section id="diensten" className="py-12 md:py-20 bg-gray-50 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="text-center mb-10 md:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 mb-4">Ons aanbod</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Van onderhoud tot verkoop - wij bieden complete automotive diensten
-            </p>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 mb-4">{c.offer_section.title}</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">{c.offer_section.subtitle}</p>
           </div>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-            {/* Occasions Card */}
-            <Link href="/occasions" className="group">
-              <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&q=80"
-                    alt="Occasions"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <h3 className="text-2xl font-bold text-white">Occasions</h3>
+            {c.offer_cards.map((card) => (
+              <Link key={card.href + card.title} href={card.href} className="group">
+                <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={card.image_url}
+                      alt={card.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="text-2xl font-bold text-white">{card.title}</h3>
+                    </div>
                   </div>
-                </div>
-                <CardContent className="p-6">
-                  <p className="text-gray-600 mb-4">
-                    Ontdek ons uitgebreide aanbod van kwaliteit occasions. 
-                    Alle auto's zijn grondig gecontroleerd.
-                  </p>
-                  <span className="text-blue-600 font-semibold flex items-center">
-                    Bekijk aanbod
-                    <ChevronRight className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </CardContent>
-              </Card>
-            </Link>
-
-            {/* Werkplaats Card */}
-            <Link href="/diensten" className="group">
-              <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=800&q=80"
-                    alt="Werkplaats"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <h3 className="text-2xl font-bold text-white">Werkplaats</h3>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <p className="text-gray-600 mb-4">
-                    Professioneel onderhoud en reparaties voor alle automerken 
-                    door ervaren monteurs.
-                  </p>
-                  <span className="text-blue-600 font-semibold flex items-center">
-                    Meer informatie
-                    <ChevronRight className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </CardContent>
-              </Card>
-            </Link>
-
-            {/* APK Card */}
-            <Link href="/afspraak" className="group">
-              <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=800&q=80"
-                    alt="APK Keuring"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <h3 className="text-2xl font-bold text-white">APK Keuring</h3>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <p className="text-gray-600 mb-4">
-                    APK keuringen via onze RDW-erkende partner, met directe 
-                    reparatiemogelijkheid bij afkeuring.
-                  </p>
-                  <span className="text-blue-600 font-semibold flex items-center">
-                    APK plannen
-                    <ChevronRight className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </CardContent>
-              </Card>
-            </Link>
+                  <CardContent className="p-6">
+                    <p className="text-gray-600 mb-4">{card.description}</p>
+                    <span className="text-blue-600 font-semibold flex items-center">
+                      {card.cta}
+                      <ChevronRight className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -258,14 +172,12 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="flex items-end justify-between gap-6 mb-8">
             <div className="min-w-0">
-              <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 mb-2">Occasions uitgelicht</h2>
-              <p className="text-gray-600 text-sm sm:text-base">
-                Bekijk wat er momenteel beschikbaar is.
-              </p>
+              <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 mb-2">{c.featured.title}</h2>
+              <p className="text-gray-600 text-sm sm:text-base">{c.featured.subtitle}</p>
             </div>
             <Link href="/occasions">
               <Button variant="outline" className="border-sky-300 text-sky-700 hover:border-sky-400 hover:bg-sky-50">
-                Alle occasions
+                {c.featured.button_label}
                 <ChevronRight className="w-5 h-5 ml-1" />
               </Button>
             </Link>
@@ -323,42 +235,17 @@ export default async function HomePage() {
       <section className="py-12 md:py-16 bg-sky-100 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
-                <CheckCircle className="w-5 h-5 text-white" />
+            {c.usps.map((usp, i) => (
+              <div key={i} className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-lg text-gray-900">{usp.title}</h4>
+                  <p className="text-sky-700 text-sm">{usp.subtitle}</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-semibold text-lg text-gray-900">Vaste prijzen</h4>
-                <p className="text-sky-700 text-sm">Geen verrassingen achteraf</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
-                <CheckCircle className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-lg text-gray-900">BOVAG garantie</h4>
-                <p className="text-sky-700 text-sm">Op al onze occasions</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
-                <CheckCircle className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-lg text-gray-900">APK via partner</h4>
-                <p className="text-sky-700 text-sm">Samenwerking met RDW-erkend station</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
-                <CheckCircle className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-lg text-gray-900">Persoonlijke service</h4>
-                <p className="text-sky-700 text-sm">Altijd bereikbaar</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -368,38 +255,24 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-4 sm:mb-6">
-              Over Autogarage Viorel
+              {c.about.title}
             </h2>
-            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-              Autogarage Viorel is een familiebedrijf dat al jaren actief is in de 
-              automotive sector in Terneuzen. Wij zijn gespecialiseerd in de in- en 
-              verkoop van auto's, onderhoud, reparaties en APK keuringen.
-            </p>
-            <p className="text-gray-600 mb-8 leading-relaxed">
-              Ons motto "Eerlijk, betaalbaar, betrouwbaar" staat centraal in alles 
-              wat wij doen. Bij ons staat persoonlijke service voorop en behandelen 
-              wij elke klant met respect en professionaliteit.
-            </p>
+            <p className="text-lg text-gray-600 mb-6 leading-relaxed">{c.about.paragraph1}</p>
+            <p className="text-gray-600 mb-8 leading-relaxed">{c.about.paragraph2}</p>
 
             <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8 max-w-xl mx-auto">
-              <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
-                <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">15+</div>
-                <div className="text-xs sm:text-sm text-gray-600">Jaar ervaring</div>
-              </div>
-              <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
-                <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">1000+</div>
-                <div className="text-xs sm:text-sm text-gray-600">Tevreden klanten</div>
-              </div>
-              <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
-                <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">100%</div>
-                <div className="text-xs sm:text-sm text-gray-600">Inzet</div>
-              </div>
+              {c.about.stats.map((s, i) => (
+                <div key={i} className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg min-w-0">
+                  <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-1">{s.value}</div>
+                  <div className="text-xs sm:text-sm text-gray-600">{s.label}</div>
+                </div>
+              ))}
             </div>
 
             <div className="flex justify-center">
               <Link href="/contact">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-                  Neem contact op
+                  {c.about.cta}
                   <ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
@@ -412,55 +285,31 @@ export default async function HomePage() {
       <section className="py-12 md:py-20 bg-gray-50 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="text-center mb-10 md:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 mb-4">Onze diensten</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Complete automotive diensten onder één dak
-            </p>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 mb-4">{c.services_detail.title}</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">{c.services_detail.subtitle}</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Wrench className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-900">Onderhoud</h3>
-                <p className="text-sm text-gray-600">Grote en kleine beurten voor alle merken</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-900">APK Keuring</h3>
-                <p className="text-sm text-gray-600">Via RDW-erkende partner</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Car className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-900">Occasions</h3>
-                <p className="text-sm text-gray-600">Kwaliteit occasions met garantie</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <circle cx="12" cy="12" r="10" strokeWidth="2" />
-                    <circle cx="12" cy="12" r="3" strokeWidth="2" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-900">Banden</h3>
-                <p className="text-sm text-gray-600">Montage, balanceren en opslag</p>
-              </CardContent>
-            </Card>
+            {c.services_detail.items.map((item, idx) => {
+              const icons = [
+                <Wrench key="i" className="w-8 h-8 text-blue-600" />,
+                <Shield key="i" className="w-8 h-8 text-blue-600" />,
+                <Car key="i" className="w-8 h-8 text-blue-600" />,
+                <svg key="i" className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                  <circle cx="12" cy="12" r="3" strokeWidth="2" />
+                </svg>,
+              ]
+              return (
+                <Card key={idx} className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">{icons[idx]}</div>
+                    <h3 className="text-lg font-semibold mb-2 text-gray-900">{item.title}</h3>
+                    <p className="text-sm text-gray-600">{item.description}</p>
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -470,10 +319,8 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 max-w-[100vw]">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
             <div className="min-w-0">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-4 sm:mb-6">Contact</h2>
-              <p className="text-lg text-gray-600 mb-8">
-                Heeft u vragen of wilt u een afspraak maken? Neem gerust contact met ons op!
-              </p>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 mb-4 sm:mb-6">{c.contact_block.title}</h2>
+              <p className="text-lg text-gray-600 mb-8">{c.contact_block.intro}</p>
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">

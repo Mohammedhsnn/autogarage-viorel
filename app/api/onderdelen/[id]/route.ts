@@ -64,11 +64,9 @@ export async function PATCH(
       name,
       description,
       artikelnummer,
-      merk,
-      motorcode,
-      versnellingsbakcode,
-      chassisnummer,
-      kba_nummer,
+      barcode,
+      voorraad,
+      waarde,
       category,
       price,
       image_url,
@@ -76,19 +74,30 @@ export async function PATCH(
       sort_order,
     } = body
 
-    if (!name || typeof name !== "string" || !name.trim()) {
-      return NextResponse.json({ error: "Naam is verplicht" }, { status: 400 })
+    const desc = typeof description === "string" ? description.trim() : ""
+    const artNr = typeof artikelnummer === "string" ? artikelnummer.trim() : ""
+    const explicitName = typeof name === "string" ? name.trim() : ""
+    const derivedName =
+      explicitName ||
+      (desc ? (desc.length > 255 ? `${desc.slice(0, 252)}...` : desc) : artNr ? `Onderdeel ${artNr}` : "")
+
+    if (!derivedName) {
+      return NextResponse.json({ error: "Omschrijving of onderdeelnummer is verplicht" }, { status: 400 })
+    }
+
+    const parseIntOrNull = (v: unknown) => {
+      if (v === null || v === undefined || v === "") return null
+      const n = parseInt(String(v), 10)
+      return Number.isFinite(n) ? n : null
     }
 
     const updates: Record<string, unknown> = {
-      name: name.trim(),
-      description: description?.trim() || null,
-      artikelnummer: artikelnummer?.trim() || null,
-      merk: merk?.trim() || null,
-      motorcode: motorcode?.trim() || null,
-      versnellingsbakcode: versnellingsbakcode?.trim() || null,
-      chassisnummer: chassisnummer?.trim() || null,
-      kba_nummer: kba_nummer?.trim() || null,
+      name: derivedName,
+      description: desc || null,
+      artikelnummer: artNr || null,
+      barcode: typeof barcode === "string" ? barcode.trim() || null : barcode != null ? String(barcode) : null,
+      voorraad: parseIntOrNull(voorraad),
+      waarde: parseIntOrNull(waarde),
       category: category?.trim() || "overig",
       price: price != null && price !== "" ? parseInt(String(price), 10) : null,
       image_url: image_url?.trim() || null,

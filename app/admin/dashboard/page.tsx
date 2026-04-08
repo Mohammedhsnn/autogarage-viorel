@@ -259,16 +259,10 @@ export default function AdminDashboard() {
                     Analytics
                   </Button>
                 </Link>
-                <Link href="/admin/homepage">
+                <Link href="/admin/cms">
                   <Button variant="outline">
                     <ImagePlus className="w-4 h-4 mr-2" />
-                    Homepage CMS (foto's)
-                  </Button>
-                </Link>
-                <Link href="/admin/diensten-subpages-cms">
-                  <Button variant="outline">
-                    <Wrench className="w-4 h-4 mr-2" />
-                    Diensten subpagina CMS
+                    CMS Site inhoud
                   </Button>
                 </Link>
                 <Button onClick={loadData} variant="outline">

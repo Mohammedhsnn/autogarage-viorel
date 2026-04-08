@@ -11,6 +11,12 @@ function getSupabase() {
   return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } })
 }
 
+/** Verwijdert interne velden voor bezoekers (niet-ingelogde API). */
+function stripOnderdeelForPublic<T extends Record<string, unknown>>(row: T): T {
+  const { voorraad: _v, waarde: _w, ...rest } = row
+  return rest as T
+}
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = getSupabase()
@@ -56,7 +62,7 @@ export async function GET(request: NextRequest) {
     if (category) query = query.eq("category", category)
     if (q) {
       query = query.or(
-        `name.ilike.%${q}%,description.ilike.%${q}%,artikelnummer.ilike.%${q}%,merk.ilike.%${q}%,motorcode.ilike.%${q}%`
+        `name.ilike.%${q}%,description.ilike.%${q}%,artikelnummer.ilike.%${q}%,merk.ilike.%${q}%,motorcode.ilike.%${q}%,barcode.ilike.%${q}%`
       )
     }
 
@@ -67,10 +73,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, onderdelen: [], count: 0 })
     }
 
+    const rows = onderdelen || []
+    const safeList = isAdmin ? rows : rows.map((r) => stripOnderdeelForPublic(r as Record<string, unknown>))
+
     return NextResponse.json({
       success: true,
-      onderdelen: onderdelen || [],
-      count: (onderdelen || []).length,
+      onderdelen: safeList,
+      count: safeList.length,
     })
   } catch (err) {
     console.error("API onderdelen GET:", err)
@@ -92,6 +101,9 @@ export async function POST(request: NextRequest) {
       name,
       description,
       artikelnummer,
+      barcode,
+      voorraad,
+      waarde,
       merk,
       motorcode,
       versnellingsbakcode,
@@ -104,17 +116,33 @@ export async function POST(request: NextRequest) {
       sort_order,
     } = body
 
-    if (!name || typeof name !== "string" || !name.trim()) {
-      return NextResponse.json({ error: "Naam is verplicht" }, { status: 400 })
+    const desc = typeof description === "string" ? description.trim() : ""
+    const artNr = typeof artikelnummer === "string" ? artikelnummer.trim() : ""
+    const explicitName = typeof name === "string" ? name.trim() : ""
+    const derivedName =
+      explicitName ||
+      (desc ? (desc.length > 255 ? `${desc.slice(0, 252)}...` : desc) : artNr ? `Onderdeel ${artNr}` : "")
+
+    if (!derivedName) {
+      return NextResponse.json({ error: "Omschrijving of onderdeelnummer is verplicht" }, { status: 400 })
+    }
+
+    const parseIntOrNull = (v: unknown) => {
+      if (v === null || v === undefined || v === "") return null
+      const n = parseInt(String(v), 10)
+      return Number.isFinite(n) ? n : null
     }
 
     const { data: row, error } = await supabase
       .from("onderdelen")
       .insert([
         {
-          name: name.trim(),
-          description: description?.trim() || null,
-          artikelnummer: artikelnummer?.trim() || null,
+          name: derivedName,
+          description: desc || null,
+          artikelnummer: artNr || null,
+          barcode: typeof barcode === "string" ? barcode.trim() || null : barcode != null ? String(barcode) : null,
+          voorraad: parseIntOrNull(voorraad),
+          waarde: parseIntOrNull(waarde),
           merk: merk?.trim() || null,
           motorcode: motorcode?.trim() || null,
           versnellingsbakcode: versnellingsbakcode?.trim() || null,
