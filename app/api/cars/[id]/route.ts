@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { isMissingApkBesprekenColumnError } from "@/lib/cars-schema-fallback"
 import { supabaseAdmin } from "@/lib/supabase"
 import * as jwt from "jsonwebtoken"
 
@@ -73,35 +74,56 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       color,
       description,
       apk_date,
+      apk_bespreken_bij_bezoek,
       owners,
       status,
       images,
       features,
     } = carData
 
-    // Update car
-    const { data: updatedCar, error: carError } = await supabaseAdmin
+    const bespreken = !!apk_bespreken_bij_bezoek
+    const apkDateVal = bespreken
+      ? null
+      : apk_date && String(apk_date).trim()
+        ? String(apk_date).trim()
+        : null
+
+    const updateBase = {
+      brand,
+      model,
+      year,
+      price,
+      mileage,
+      fuel,
+      transmission,
+      doors,
+      seats,
+      color,
+      description,
+      apk_date: apkDateVal,
+      owners,
+      status: status || "available",
+      updated_at: new Date().toISOString(),
+    }
+
+    let { data: updatedCar, error: carError } = await supabaseAdmin
       .from("cars")
-      .update({
-        brand,
-        model,
-        year,
-        price,
-        mileage,
-        fuel,
-        transmission,
-        doors,
-        seats,
-        color,
-        description,
-        apk_date,
-        owners,
-        status: status || "available",
-        updated_at: new Date().toISOString(),
-      })
+      .update({ ...updateBase, apk_bespreken_bij_bezoek: bespreken })
       .eq("id", carId)
       .select()
       .single()
+
+    if (carError && isMissingApkBesprekenColumnError(carError)) {
+      console.warn(
+        "[cars API] apk_bespreken_bij_bezoek column missing; run scripts/008-cars-apk-bespreken-bij-bezoek.sql. Saving without that flag.",
+      )
+      ;({ data: updatedCar, error: carError } = await supabaseAdmin
+        .from("cars")
+        .update(updateBase)
+        .eq("id", carId)
+        .select()
+        .single())
+    }
 
     if (carError) {
       console.error("Error updating car:", carError)

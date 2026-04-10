@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { ArrowLeft, Save, Loader2 } from "lucide-react"
+import { ArrowLeft, Save, Loader2, CalendarDays } from "lucide-react"
 import Link from "next/link"
 import { getCarById, updateCar } from "@/app/actions"
 import { CarImagesEditor } from "@/components/admin/CarImagesEditor"
@@ -63,6 +64,7 @@ export default function EditCarPage() {
     color: "",
     description: "",
     apk_date: "",
+    apk_bespreken_bij_bezoek: false,
     owners: 1,
     status: "available",
   })
@@ -98,7 +100,8 @@ export default function EditCarPage() {
         seats: carData.seats,
         color: carData.color,
         description: carData.description || "",
-        apk_date: carData.apk_date || "",
+        apk_date: carData.apk_bespreken_bij_bezoek ? "" : carData.apk_date || "",
+        apk_bespreken_bij_bezoek: !!carData.apk_bespreken_bij_bezoek,
         owners: carData.owners || 1,
         status: carData.status || "available",
       })
@@ -290,7 +293,7 @@ export default function EditCarPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="doors">Deuren *</Label>
                   <Input
@@ -315,7 +318,56 @@ export default function EditCarPage() {
                     onChange={(e) => setFormData({ ...formData, seats: Number(e.target.value) })}
                   />
                 </div>
-                <div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="apk_date" className="flex items-center gap-2">
+                      <CalendarDays className="w-4 h-4 text-gray-500" />
+                      APK verloopdatum
+                    </Label>
+                    <Input
+                      id="apk_date"
+                      type="date"
+                      value={formData.apk_date}
+                      disabled={formData.apk_bespreken_bij_bezoek}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          apk_date: e.target.value,
+                          apk_bespreken_bij_bezoek: false,
+                        })
+                      }
+                      className={`mt-1.5 ${formData.apk_bespreken_bij_bezoek ? "opacity-50 cursor-not-allowed bg-gray-50" : ""}`}
+                    />
+                    {!formData.apk_bespreken_bij_bezoek && (
+                      <p className="text-xs text-gray-500 mt-1.5">Laat leeg als er nog geen datum bekend is, of vink hieronder aan.</p>
+                    )}
+                  </div>
+                  <div className="flex items-start gap-2.5 pt-0.5">
+                    <Checkbox
+                      id="apk-bespreken-bij-bezoek"
+                      checked={formData.apk_bespreken_bij_bezoek}
+                      onCheckedChange={(c) => {
+                        const on = c === true
+                        setFormData((p) =>
+                          on ? { ...p, apk_bespreken_bij_bezoek: true, apk_date: "" } : { ...p, apk_bespreken_bij_bezoek: false },
+                        )
+                      }}
+                      className="mt-0.5"
+                    />
+                    <label htmlFor="apk-bespreken-bij-bezoek" className="text-sm text-gray-600 leading-snug cursor-pointer select-none">
+                      APK datum bespreken bij langskomen
+                    </label>
+                  </div>
+                  {formData.apk_bespreken_bij_bezoek && (
+                    <p className="text-xs text-gray-500 pl-7">
+                      Geen vaste datum op de occasionpagina; APK wordt bij een bezoek besproken.
+                    </p>
+                  )}
+                </div>
+                <div className="self-start">
                   <Label htmlFor="owners">Eigenaren *</Label>
                   <Input
                     id="owners"
@@ -324,36 +376,26 @@ export default function EditCarPage() {
                     min="1"
                     value={formData.owners}
                     onChange={(e) => setFormData({ ...formData, owners: Number(e.target.value) })}
+                    className="mt-1.5"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="apk_date">APK Verloopdatum</Label>
-                  <Input
-                    id="apk_date"
-                    type="date"
-                    value={formData.apk_date}
-                    onChange={(e) => setFormData({ ...formData, apk_date: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="status">Status *</Label>
-                  <select
-                    id="status"
-                    required
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  >
-                    {statusTypes.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div>
+                <Label htmlFor="status">Status *</Label>
+                <select
+                  id="status"
+                  required
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md mt-1.5"
+                >
+                  {statusTypes.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>

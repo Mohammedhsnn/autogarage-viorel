@@ -70,6 +70,7 @@ export interface Car {
   color: string
   description: string | null
   apk_date: string | null
+  apk_bespreken_bij_bezoek?: boolean
   owners: number
   status: "available" | "sold"
   created_at: string

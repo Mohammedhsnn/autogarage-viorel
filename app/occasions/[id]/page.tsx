@@ -12,6 +12,7 @@ import {
   CheckCircle,
   ChevronLeft,
   MapPin,
+  MessageCircle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/Header"
@@ -85,6 +86,10 @@ export default async function OccasionDetailPage({ params }: Props) {
 
   const car = await getCarById(carId)
   if (!car || car.status !== "available") notFound()
+
+  const apkBesprekenBijBezoek = Boolean(
+    (car as { apk_bespreken_bij_bezoek?: boolean }).apk_bespreken_bij_bezoek,
+  )
 
   return (
     <div className="min-h-screen bg-white">
@@ -211,16 +216,25 @@ export default async function OccasionDetailPage({ params }: Props) {
                   </div>
                 </div>
 
-                {car.apk_date && (
-                  <div className="mt-4 flex items-center gap-2 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span className="text-gray-700">
-                      APK geldig tot{" "}
-                      <span className="font-medium">
-                        {new Date(car.apk_date).toLocaleDateString("nl-NL")}
-                      </span>
+                {apkBesprekenBijBezoek ? (
+                  <div className="mt-4 flex items-start gap-2 text-sm rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2.5">
+                    <MessageCircle className="w-4 h-4 text-slate-600 shrink-0 mt-0.5" />
+                    <span className="text-slate-700 leading-snug">
+                      <span className="font-medium text-slate-900">APK</span> — de verloopdatum wordt bij een bezoek aan de garage met u besproken; er staat geen vaste datum online.
                     </span>
                   </div>
+                ) : (
+                  car.apk_date && (
+                    <div className="mt-4 flex items-center gap-2 text-sm">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-gray-700">
+                        APK geldig tot{" "}
+                        <span className="font-medium">
+                          {new Date(car.apk_date).toLocaleDateString("nl-NL")}
+                        </span>
+                      </span>
+                    </div>
+                  )
                 )}
               </div>
             </div>

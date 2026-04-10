@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
-import { ArrowLeft, Car, Info } from "lucide-react"
+import { ArrowLeft, Car, Info, CalendarDays } from "lucide-react"
 import Link from "next/link"
 import { CarImagesEditor } from "@/components/admin/CarImagesEditor"
 
@@ -47,6 +47,7 @@ export default function NewCarPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [images, setImages] = useState<string[]>([])
+  const [apkBesprekenBijBezoek, setApkBesprekenBijBezoek] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
 
@@ -109,7 +110,8 @@ export default function NewCarPage() {
         seats: Number.parseInt(formData.seats),
         color: formData.color,
         description: formData.description || null,
-        apk_date: formData.apk || null,
+        apk_date: apkBesprekenBijBezoek ? null : formData.apk || null,
+        apk_bespreken_bij_bezoek: apkBesprekenBijBezoek,
         owners: Number.parseInt(formData.owners),
         images,
         features: formData.features,
@@ -280,11 +282,45 @@ export default function NewCarPage() {
                     <option value="8">8</option>
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">APK geldig tot</label>
-                  <Input name="apk" type="date" value={formData.apk} onChange={handleInputChange} />
+                <div className="space-y-3">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                    <CalendarDays className="w-4 h-4 text-gray-500" />
+                    APK geldig tot
+                  </label>
+                  <Input
+                    name="apk"
+                    type="date"
+                    value={formData.apk}
+                    onChange={(e) => {
+                      setApkBesprekenBijBezoek(false)
+                      handleInputChange(e)
+                    }}
+                    disabled={apkBesprekenBijBezoek}
+                    className={apkBesprekenBijBezoek ? "opacity-50 cursor-not-allowed bg-gray-50" : ""}
+                  />
+                  {!apkBesprekenBijBezoek && (
+                    <p className="text-xs text-gray-500">Of vink hieronder aan om de datum in de garage te bespreken.</p>
+                  )}
+                  <div className="flex items-start gap-2.5 pt-0.5">
+                    <Checkbox
+                      id="apk-bespreken-bij-bezoek"
+                      checked={apkBesprekenBijBezoek}
+                      onCheckedChange={(c) => {
+                        const on = c === true
+                        setApkBesprekenBijBezoek(on)
+                        if (on) setFormData((p) => ({ ...p, apk: "" }))
+                      }}
+                      className="mt-0.5"
+                    />
+                    <label htmlFor="apk-bespreken-bij-bezoek" className="text-sm text-gray-600 leading-snug cursor-pointer select-none">
+                      APK datum bespreken bij langskomen
+                    </label>
+                  </div>
+                  {apkBesprekenBijBezoek && (
+                    <p className="text-xs text-gray-500 pl-7">Geen vaste datum op de website; wordt bij een bezoek besproken.</p>
+                  )}
                 </div>
-                <div>
+                <div className="self-start">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Aantal eigenaren</label>
                   <select
                     name="owners"

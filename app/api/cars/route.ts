@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getCars } from "@/app/actions"
+import { isMissingApkBesprekenColumnError } from "@/lib/cars-schema-fallback"
 import { supabaseAdmin } from "@/lib/supabase"
 import * as jwt from "jsonwebtoken"
 
@@ -73,33 +74,52 @@ export async function POST(request: NextRequest) {
       color,
       description,
       apk_date,
+      apk_bespreken_bij_bezoek,
       owners,
       images,
       features,
     } = carData
 
-    const { data: newCar, error: carError } = await supabaseAdmin
+    const bespreken = !!apk_bespreken_bij_bezoek
+    const apkDateVal = bespreken
+      ? null
+      : apk_date && String(apk_date).trim()
+        ? String(apk_date).trim()
+        : null
+
+    const insertBase = {
+      brand,
+      model,
+      year,
+      price,
+      mileage,
+      fuel,
+      transmission,
+      doors,
+      seats,
+      color,
+      description,
+      apk_date: apkDateVal,
+      owners: owners || 1,
+      status: "available" as const,
+    }
+
+    let { data: newCar, error: carError } = await supabaseAdmin
       .from("cars")
-      .insert([
-        {
-          brand,
-          model,
-          year,
-          price,
-          mileage,
-          fuel,
-          transmission,
-          doors,
-          seats,
-          color,
-          description,
-          apk_date,
-          owners: owners || 1,
-          status: "available",
-        },
-      ])
+      .insert([{ ...insertBase, apk_bespreken_bij_bezoek: bespreken }])
       .select()
       .single()
+
+    if (carError && isMissingApkBesprekenColumnError(carError)) {
+      console.warn(
+        "[cars API] apk_bespreken_bij_bezoek column missing; run scripts/008-cars-apk-bespreken-bij-bezoek.sql. Saving without that flag.",
+      )
+      ;({ data: newCar, error: carError } = await supabaseAdmin
+        .from("cars")
+        .insert([insertBase])
+        .select()
+        .single())
+    }
 
     if (carError) throw carError
 

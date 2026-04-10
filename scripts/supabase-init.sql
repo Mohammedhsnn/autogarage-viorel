@@ -42,6 +42,7 @@ CREATE TABLE cars (
   color VARCHAR(50) NOT NULL,
   description TEXT,
   apk_date DATE,
+  apk_bespreken_bij_bezoek BOOLEAN NOT NULL DEFAULT false,
   owners INTEGER DEFAULT 1,
   status VARCHAR(20) DEFAULT 'available',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

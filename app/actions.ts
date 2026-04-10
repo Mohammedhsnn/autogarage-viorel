@@ -1,7 +1,38 @@
 "use server"
 
 import { supabaseAdmin } from "@/lib/supabase"
+import { isMissingApkBesprekenColumnError } from "@/lib/cars-schema-fallback"
 import bcrypt from "bcryptjs"
+
+/** Supabase PostgrestError objects don't serialize across RSC; always throw a real Error. */
+function asSerializableError(err: unknown): Error {
+  let out: Error
+  if (err instanceof Error) {
+    out = err
+  } else if (err && typeof err === "object" && "message" in err) {
+    const o = err as { message?: string; code?: string; details?: string; hint?: string }
+    const parts = [o.message, o.code, o.details, o.hint].filter(Boolean)
+    out = new Error(parts.length ? parts.join(" — ") : "Database error")
+  } else {
+    out = new Error(typeof err === "string" ? err : "Unknown error")
+  }
+
+  const msg = out.message
+  if (
+    msg.includes("apk_bespreken_bij_bezoek") &&
+    (msg.includes("schema cache") || msg.includes("PGRST204")) &&
+    !msg.includes("Supabase Dashboard")
+  ) {
+    return new Error(
+      `${msg}\n\n` +
+        "Database-migratie: Supabase Dashboard → SQL Editor → New query → plak en run:\n\n" +
+        "ALTER TABLE cars ADD COLUMN IF NOT EXISTS apk_bespreken_bij_bezoek BOOLEAN NOT NULL DEFAULT false;\n\n" +
+        "Zelfde script staat in scripts/008-cars-apk-bespreken-bij-bezoek.sql. " +
+        "Controleer dat .env.local bij hetzelfde Supabase-project hoort als waar je de SQL draait.",
+    )
+  }
+  return out
+}
 
 export async function testDatabaseConnection() {
   try {
@@ -77,7 +108,7 @@ export async function getCars(filters?: {
 
     if (carsError) {
       console.error("Error fetching cars:", carsError)
-      throw carsError
+      throw asSerializableError(carsError)
     }
 
     if (!cars || cars.length === 0) {
@@ -134,7 +165,7 @@ export async function getCars(filters?: {
     return carsWithDetails
   } catch (error) {
     console.error("Error in getCars:", error)
-    throw error
+    throw asSerializableError(error)
   }
 }
 
@@ -157,7 +188,7 @@ export async function getCarById(id: number) {
     // Get car
     const { data: car, error: carError } = await supabaseAdmin.from("cars").select("*").eq("id", id).single()
 
-    if (carError) throw carError
+    if (carError) throw asSerializableError(carError)
     if (!car) return null
 
     // Get images
@@ -190,7 +221,7 @@ export async function getCarById(id: number) {
     }
   } catch (error) {
     console.error("Error fetching car:", error)
-    throw error
+    throw asSerializableError(error)
   }
 }
 
@@ -204,7 +235,7 @@ export async function getStats() {
 
     if (totalError) {
       console.error("Error counting total cars:", totalError)
-      throw totalError
+      throw asSerializableError(totalError)
     }
 
     const { count: availableCars, error: availableError } = await supabaseAdmin
@@ -214,7 +245,7 @@ export async function getStats() {
 
     if (availableError) {
       console.error("Error counting available cars:", availableError)
-      throw availableError
+      throw asSerializableError(availableError)
     }
 
     const { count: soldCars, error: soldError } = await supabaseAdmin
@@ -224,7 +255,7 @@ export async function getStats() {
 
     if (soldError) {
       console.error("Error counting sold cars:", soldError)
-      throw soldError
+      throw asSerializableError(soldError)
     }
 
     const { data: inventoryData, error: inventoryError } = await supabaseAdmin
@@ -234,7 +265,7 @@ export async function getStats() {
 
     if (inventoryError) {
       console.error("Error fetching inventory:", inventoryError)
-      throw inventoryError
+      throw asSerializableError(inventoryError)
     }
 
     const totalInventoryValue = inventoryData?.reduce((sum, car) => sum + (car.price || 0), 0) || 0
@@ -274,35 +305,54 @@ export async function createCar(carData: any) {
       color,
       description,
       apk_date,
+      apk_bespreken_bij_bezoek,
       owners,
       images,
       features,
     } = carData
 
-    const { data: newCar, error: carError } = await supabaseAdmin
+    const bespreken = !!apk_bespreken_bij_bezoek
+    const apkDateVal = bespreken
+      ? null
+      : apk_date && String(apk_date).trim()
+        ? String(apk_date).trim()
+        : null
+
+    const insertBase = {
+      brand,
+      model,
+      year,
+      price,
+      mileage,
+      fuel,
+      transmission,
+      doors,
+      seats,
+      color,
+      description,
+      apk_date: apkDateVal,
+      owners: owners || 1,
+      status: "available" as const,
+    }
+
+    let { data: newCar, error: carError } = await supabaseAdmin
       .from("cars")
-      .insert([
-        {
-          brand,
-          model,
-          year,
-          price,
-          mileage,
-          fuel,
-          transmission,
-          doors,
-          seats,
-          color,
-          description,
-          apk_date,
-          owners: owners || 1,
-          status: "available",
-        },
-      ])
+      .insert([{ ...insertBase, apk_bespreken_bij_bezoek: bespreken }])
       .select()
       .single()
 
-    if (carError) throw carError
+    if (carError && isMissingApkBesprekenColumnError(carError)) {
+      console.warn(
+        "[cars] apk_bespreken_bij_bezoek column missing; run scripts/008-cars-apk-bespreken-bij-bezoek.sql. Saving without that flag.",
+      )
+      ;({ data: newCar, error: carError } = await supabaseAdmin
+        .from("cars")
+        .insert([insertBase])
+        .select()
+        .single())
+    }
+
+    if (carError) throw asSerializableError(carError)
 
     if (images && Array.isArray(images) && images.length > 0) {
       const imageData = images.map((url: string, index: number) => ({
@@ -313,7 +363,7 @@ export async function createCar(carData: any) {
       }))
 
       const { error: imagesError } = await supabaseAdmin.from("car_images").insert(imageData)
-      if (imagesError) throw imagesError
+      if (imagesError) throw asSerializableError(imagesError)
     }
 
     if (features && Array.isArray(features) && features.length > 0) {
@@ -323,13 +373,13 @@ export async function createCar(carData: any) {
       }))
 
       const { error: featuresError } = await supabaseAdmin.from("car_features").insert(featureData)
-      if (featuresError) throw featuresError
+      if (featuresError) throw asSerializableError(featuresError)
     }
 
     return newCar
   } catch (error) {
     console.error("Error creating car:", error)
-    throw error
+    throw asSerializableError(error)
   }
 }
 
@@ -348,36 +398,53 @@ export async function updateCar(id: number, carData: any) {
       color,
       description,
       apk_date,
+      apk_bespreken_bij_bezoek,
       owners,
       status,
       images,
       features,
     } = carData
 
-    const { data, error } = await supabaseAdmin
+    const bespreken = !!apk_bespreken_bij_bezoek
+    const apkDateVal = bespreken
+      ? null
+      : apk_date && String(apk_date).trim()
+        ? String(apk_date).trim()
+        : null
+
+    const updateBase = {
+      brand,
+      model,
+      year,
+      price,
+      mileage,
+      fuel,
+      transmission,
+      doors,
+      seats,
+      color,
+      description,
+      apk_date: apkDateVal,
+      owners,
+      status,
+      updated_at: new Date().toISOString(),
+    }
+
+    let { data, error } = await supabaseAdmin
       .from("cars")
-      .update({
-        brand,
-        model,
-        year,
-        price,
-        mileage,
-        fuel,
-        transmission,
-        doors,
-        seats,
-        color,
-        description,
-        apk_date,
-        owners,
-        status,
-        updated_at: new Date().toISOString(),
-      })
+      .update({ ...updateBase, apk_bespreken_bij_bezoek: bespreken })
       .eq("id", id)
       .select()
       .single()
 
-    if (error) throw error
+    if (error && isMissingApkBesprekenColumnError(error)) {
+      console.warn(
+        "[cars] apk_bespreken_bij_bezoek column missing; run scripts/008-cars-apk-bespreken-bij-bezoek.sql. Saving without that flag.",
+      )
+      ;({ data, error } = await supabaseAdmin.from("cars").update(updateBase).eq("id", id).select().single())
+    }
+
+    if (error) throw asSerializableError(error)
 
     if (images && Array.isArray(images)) {
       await supabaseAdmin.from("car_images").delete().eq("car_id", id)
@@ -410,7 +477,7 @@ export async function updateCar(id: number, carData: any) {
     return data
   } catch (error) {
     console.error("Error updating car:", error)
-    throw error
+    throw asSerializableError(error)
   }
 }
 
@@ -420,12 +487,12 @@ export async function deleteCar(id: number) {
     await supabaseAdmin.from("car_features").delete().eq("car_id", id)
     const { error } = await supabaseAdmin.from("cars").delete().eq("id", id)
 
-    if (error) throw error
+    if (error) throw asSerializableError(error)
 
     return { success: true }
   } catch (error) {
     console.error("Error deleting car:", error)
-    throw error
+    throw asSerializableError(error)
   }
 }
 
@@ -433,7 +500,7 @@ export async function loginUser(email: string, password: string) {
   try {
     const { data: users, error } = await supabaseAdmin.from("users").select("*").eq("email", email)
 
-    if (error) throw error
+    if (error) throw asSerializableError(error)
     if (!users || users.length === 0) {
       throw new Error("Invalid credentials")
     }
@@ -453,6 +520,6 @@ export async function loginUser(email: string, password: string) {
     }
   } catch (error) {
     console.error("Login error:", error)
-    throw error
+    throw asSerializableError(error)
   }
 }
